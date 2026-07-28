@@ -633,3 +633,237 @@ html, body {
     line-height: 1.4;
     color: #cbd5e1;
 }
+
+/* ============================================================ */
+/* 🔐 로그인 / 회원가입 화면 스타일                               */
+/* ============================================================ */
+
+/* 전체 화면 로그인 배경 */
+.auth-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 70%);
+    overflow: hidden;
+}
+
+/* 로그인 화면 배경 빛 */
+.auth-bg-glow {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.2;
+    pointer-events: none;
+}
+.auth-glow-1 { top: -80px; left: -80px; background: #a855f7; }
+.auth-glow-2 { bottom: -80px; right: -80px; background: #38bdf8; }
+
+/* 로그인 카드 (글래스모피즘) */
+.auth-card {
+    position: relative;
+    width: 90%;
+    max-width: 380px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 28px;
+    padding: 36px 28px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* 로고 & 타이틀 */
+.auth-title-area {
+    text-align: center;
+}
+.auth-logo {
+    font-size: 3rem;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.6));
+}
+.auth-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #38bdf8, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.auth-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* 탭 버튼 */
+.auth-tabs {
+    display: flex;
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 14px;
+    padding: 4px;
+    gap: 4px;
+}
+.auth-tab {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-family);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.auth-tab.active {
+    background: rgba(56, 189, 248, 0.2);
+    color: #38bdf8;
+    box-shadow: 0 2px 8px rgba(56, 189, 248, 0.2);
+}
+
+/* 입력 폼 */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.auth-input-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    padding: 14px 16px;
+    transition: border-color 0.2s;
+}
+.auth-input-group:focus-within {
+    border-color: rgba(56, 189, 248, 0.5);
+    background: rgba(56, 189, 248, 0.05);
+}
+.auth-input-group i {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    width: 18px;
+    text-align: center;
+}
+.auth-input {
+    flex: 1;
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text-bright);
+    font-family: var(--font-family);
+    font-size: 0.95rem;
+    user-select: text; /* 입력창에서만 텍스트 선택 허용 */
+}
+.auth-input::placeholder { color: rgba(148, 163, 184, 0.5); }
+
+/* 오류 메시지 */
+.auth-error {
+    font-size: 0.8rem;
+    color: #f87171;
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    border-radius: 8px;
+    padding: 8px 12px;
+    text-align: center;
+}
+
+/* 제출 버튼 */
+.auth-submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px;
+    margin-top: 4px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    color: white;
+    font-family: var(--font-family);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.35);
+}
+.auth-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+}
+.auth-submit-btn:active { transform: translateY(0); }
+.auth-submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* ============================================================ */
+/* 🎮 이어서 / 처음부터 선택 모달 스타일                         */
+/* ============================================================ */
+.continue-card {
+    text-align: center;
+    padding: 36px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+.continue-icon { font-size: 2.5rem; }
+.continue-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-bright);
+}
+.continue-info {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+.continue-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    margin-top: 8px;
+}
+.continue-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    font-family: var(--font-family);
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.continue-btn.primary {
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    color: white;
+    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+}
+.continue-btn.secondary {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-muted);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.continue-btn:hover { transform: translateY(-2px); }
+.continue-btn:active { transform: translateY(0); }
+
+/* 숨김 처리 유틸리티 */
+.hidden { display: none !important; }

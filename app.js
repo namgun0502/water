@@ -369,65 +369,293 @@ class SoundManager {
 
 const soundEngine = new SoundManager();
 
+// ============================================================
+// 4. Supabase 클라이언트 초기화
+// Supabase는 플레이어 정보와 설정을 온라인에 저장하는 역할을 합니다.
+// ============================================================
+const SUPABASE_URL  = 'https://qzhgsshyhmnczmreagqd.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6aGdzc2h5aG1uY3ptcmVhZ3FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyNzc0NzksImV4cCI6MjA5Nzg1MzQ3OX0.2NZxyClmIpj7WtUuZtexZqAMuTnC7udF5FejwitzvcU';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+// ============================================================
+// 5. AuthManager - 로그인 / 회원가입 / 로그아웃 담당
+// ============================================================
+class AuthManager {
+    constructor() {
+        // 로그인 화면 DOM 요소
+        this.authScreen    = document.getElementById('auth-screen');
+        this.loginForm     = document.getElementById('login-form');
+        this.signupForm    = document.getElementById('signup-form');
+        this.loginError    = document.getElementById('login-error');
+        this.signupError   = document.getElementById('signup-error');
+
+        this.initAuthEvents();
+    }
+
+    // 로그인 / 회원가입 이벤트 연결
+    initAuthEvents() {
+        // 로그인 폼 제출
+        this.loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await this.handleLogin();
+        });
+
+        // 회원가입 폼 제출
+        this.signupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await this.handleSignup();
+        });
+    }
+
+    // 로그인 처리
+    async handleLogin() {
+        const email    = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+        const btn      = document.getElementById('btn-login');
+
+        this.hideError('login');
+        btn.disabled = true;
+        btn.querySelector('span').textContent = '로그인 중...';
+
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+        btn.disabled = false;
+        btn.querySelector('span').textContent = '로그인';
+
+        if (error) {
+            this.showError('login', '이메일 또는 비밀번호가 올바르지 않습니다.');
+            return;
+        }
+
+        // 로그인 성공 → 게임 시작
+        await startGameAfterAuth(data.user);
+    }
+
+    // 회원가입 처리
+    async handleSignup() {
+        const nickname = document.getElementById('signup-nickname').value.trim();
+        const email    = document.getElementById('signup-email').value.trim();
+        const password = document.getElementById('signup-password').value;
+        const btn      = document.getElementById('btn-signup');
+
+        this.hideError('signup');
+
+        if (!nickname) { this.showError('signup', '닉네임을 입력해 주세요.'); return; }
+        if (password.length < 6) { this.showError('signup', '비밀번호는 6자리 이상이어야 합니다.'); return; }
+
+        btn.disabled = true;
+        btn.querySelector('span').textContent = '가입 중...';
+
+        // Supabase Auth로 회원가입
+        const { data, error } = await supabase.auth.signUp({ email, password });
+
+        btn.disabled = false;
+        btn.querySelector('span').textContent = '회원가입';
+
+        if (error) {
+            this.showError('signup', '이미 사용 중인 이메일이거나 오류가 발생했습니다.');
+            return;
+        }
+
+        // DB에 초기 플레이어 설정 저장 (닉네임 포함)
+        await supabase.from('player_settings').insert({
+            id: data.user.id,
+            nickname: nickname,
+            stage: 1,
+            bg_theme: 'deep-space',
+            bgm_track: 'lofi',
+            bgm_volume: 60,
+            sfx_volume: 80
+        });
+
+        // 가입 성공 → 새 게임 시작
+        await startGameAfterAuth(data.user, true);
+    }
+
+    // 오류 메시지 표시
+    showError(type, msg) {
+        const el = type === 'login' ? this.loginError : this.signupError;
+        el.textContent = msg;
+        el.classList.remove('hidden');
+    }
+
+    // 오류 메시지 숨기기
+    hideError(type) {
+        const el = type === 'login' ? this.loginError : this.signupError;
+        el.classList.add('hidden');
+    }
+
+    // 로그인 화면 숨기기
+    hideAuthScreen() {
+        this.authScreen.classList.add('hidden');
+    }
+}
+
+// ============================================================
+// 6. PlayerDataManager - Supabase에서 플레이어 설정 저장/불러오기
+// ============================================================
+class PlayerDataManager {
+    constructor(userId) {
+        this.userId = userId; // 현재 로그인한 사용자 고유 ID
+    }
+
+    // Supabase에서 내 설정 불러오기
+    async load() {
+        const { data, error } = await supabase
+            .from('player_settings')
+            .select('*')
+            .eq('id', this.userId)
+            .single();
+
+        if (error || !data) return null;
+        return data;
+    }
+
+    // Supabase에 현재 설정 저장 (스테이지, 배경, BGM, 볼륨)
+    async save(settings) {
+        await supabase
+            .from('player_settings')
+            .update({ ...settings, updated_at: new Date().toISOString() })
+            .eq('id', this.userId);
+    }
+}
+
+// 탭 전환 전역 함수 (HTML onclick에서 호출)
+function switchTab(tab) {
+    const loginForm  = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const tabLogin   = document.getElementById('tab-login');
+    const tabSignup  = document.getElementById('tab-signup');
+
+    if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+        tabLogin.classList.add('active');
+        tabSignup.classList.remove('active');
+    } else {
+        signupForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+        tabSignup.classList.add('active');
+        tabLogin.classList.remove('active');
+    }
+}
+
+// 로그인 성공 후 이어서/새로 시작 선택 및 게임 초기화
+async function startGameAfterAuth(user, isNewUser = false) {
+    const authManager = window._authManager;
+    authManager.hideAuthScreen();
+
+    const playerData = new PlayerDataManager(user.id);
+    const settings   = await playerData.load();
+
+    if (isNewUser || !settings || settings.stage <= 1) {
+        // 새 유저 또는 스테이지 1이면 바로 시작
+        window.gameApp = new WaterSortGame(user, playerData, settings, false);
+        document.getElementById('app').classList.remove('hidden');
+        return;
+    }
+
+    // 저장된 스테이지가 2 이상이면 선택 모달 표시
+    const continueModal = document.getElementById('continue-modal');
+    document.getElementById('continue-welcome').textContent =
+        `${settings.nickname}님, 반갑습니다!`;
+    document.getElementById('continue-info').textContent =
+        `마지막으로 진행한 스테이지: ${settings.stage}단계`;
+    continueModal.classList.remove('hidden');
+    document.getElementById('app').classList.remove('hidden');
+
+    // 이어서 진행 버튼
+    document.getElementById('btn-continue').onclick = () => {
+        continueModal.classList.add('hidden');
+        window.gameApp = new WaterSortGame(user, playerData, settings, true); // 이어서
+    };
+
+    // 처음부터 시작 버튼
+    document.getElementById('btn-new-game').onclick = () => {
+        continueModal.classList.add('hidden');
+        window.gameApp = new WaterSortGame(user, playerData, settings, false); // 처음부터
+    };
+}
+
+
 // 3. 메인 게임 클래스 (WaterSortGame)
 class WaterSortGame {
-    constructor() {
-        this.stage = 1;
-        this.bottles = [];
+    // user: 로그인 정보, playerData: DB 저장 매니저,
+    // settings: 저장된 설정값, isContinue: 이어서 진행 여부
+    constructor(user, playerData, settings, isContinue) {
+        this.user        = user;
+        this.playerData  = playerData; // PlayerDataManager 인스턴스
+        this.stage       = (isContinue && settings) ? (settings.stage || 1) : 1;
+        this.bottles     = [];
         this.selectedBottleIdx = null;
-        this.history = [];
+        this.history     = [];
         this.bonusBottlesCount = 1;
         this.isAnimating = false;
-        this.currentBgTheme = 'deep-space'; // 기본 배경 테마
+        this.currentBgTheme = (settings && settings.bg_theme) ? settings.bg_theme : 'deep-space';
 
         // DOM 요소
         this.bottlesContainer = document.getElementById('bottles-container');
-        this.stageNumEl = document.getElementById('stage-number');
-        this.winModal = document.getElementById('win-modal');
-        this.infoModal = document.getElementById('info-modal');
-        this.soundModal = document.getElementById('sound-modal');
-        this.appEl = document.getElementById('app'); // 배경 테마를 적용할 최상위 요소
+        this.stageNumEl       = document.getElementById('stage-number');
+        this.winModal         = document.getElementById('win-modal');
+        this.infoModal        = document.getElementById('info-modal');
+        this.soundModal       = document.getElementById('sound-modal');
+        this.appEl            = document.getElementById('app');
 
-        this.bgmSelect = document.getElementById('bgm-select');
-        this.bgThemeSelect = document.getElementById('bg-theme-select'); // 배경 테마 선택 드롭다운
+        this.bgmSelect       = document.getElementById('bgm-select');
+        this.bgThemeSelect   = document.getElementById('bg-theme-select');
         this.bgmVolumeSlider = document.getElementById('bgm-volume');
         this.sfxVolumeSlider = document.getElementById('sfx-volume');
-        this.bgmValText = document.getElementById('bgm-val-text');
-        this.sfxValText = document.getElementById('sfx-val-text');
+        this.bgmValText      = document.getElementById('bgm-val-text');
+        this.sfxValText      = document.getElementById('sfx-val-text');
 
-        this.loadProgress();
-        this.applyBgTheme(this.currentBgTheme); // 저장된 배경 테마 즉시 적용
+        // 저장된 설정을 UI에 즉시 반영
+        this.applyBgTheme(this.currentBgTheme);
+        if (settings) this.applySettings(settings);
+
         this.initEvents();
         this.startStage(this.stage);
     }
 
-    loadProgress() {
-        // 저장된 스테이지 번호 불러오기
-        const savedStage = localStorage.getItem('watersort_stage');
-        if (savedStage) {
-            this.stage = parseInt(savedStage, 10) || 1;
+    // Supabase에서 불러온 설정값을 UI 슬라이더/드롭다운에 반영
+    applySettings(settings) {
+        // BGM 트랙 UI 동기화
+        if (this.bgmSelect && settings.bgm_track) {
+            this.bgmSelect.value = settings.bgm_track;
         }
-        // 저장된 배경 테마 불러오기
-        const savedTheme = localStorage.getItem('watersort_bg_theme');
-        if (savedTheme) {
-            this.currentBgTheme = savedTheme;
+        // BGM 볼륨 UI 동기화
+        if (settings.bgm_volume !== undefined) {
+            this.bgmVolumeSlider.value = settings.bgm_volume;
+            this.bgmValText.textContent = `${settings.bgm_volume}%`;
+            soundEngine.setBgmVolume(settings.bgm_volume / 100);
         }
+        // SFX 볼륨 UI 동기화
+        if (settings.sfx_volume !== undefined) {
+            this.sfxVolumeSlider.value = settings.sfx_volume;
+            this.sfxValText.textContent = `${settings.sfx_volume}%`;
+            soundEngine.setSfxVolume(settings.sfx_volume / 100);
+        }
+        // 저장된 BGM 재생 (딜레이 후 시작)
+        const track = settings.bgm_track || 'lofi';
+        setTimeout(() => soundEngine.changeBgm(track), 500);
     }
 
-    saveProgress() {
-        // 스테이지 번호 저장
-        localStorage.setItem('watersort_stage', this.stage);
+    // 현재 설정을 Supabase DB에 저장
+    async saveProgress() {
+        if (!this.playerData) return;
+        await this.playerData.save({
+            stage:      this.stage,
+            bg_theme:   this.currentBgTheme,
+            bgm_track:  this.bgmSelect ? this.bgmSelect.value : 'lofi',
+            bgm_volume: this.bgmVolumeSlider ? parseInt(this.bgmVolumeSlider.value, 10) : 60,
+            sfx_volume: this.sfxVolumeSlider ? parseInt(this.sfxVolumeSlider.value, 10) : 80
+        });
     }
 
-    // 배경 테마를 #app에 data-theme 속성으로 적용하고 LocalStorage에 저장하는 함수
+    // 배경 테마를 #app에 data-theme 속성으로 적용
     applyBgTheme(theme) {
         this.currentBgTheme = theme;
-        this.appEl.setAttribute('data-theme', theme); // CSS가 이 속성을 읽어 배경 변경
-        localStorage.setItem('watersort_bg_theme', theme); // 다음 방문에도 유지
-        // 드롭다운 UI도 선택 값에 맞게 동기화
-        if (this.bgThemeSelect) {
-            this.bgThemeSelect.value = theme;
-        }
+        this.appEl.setAttribute('data-theme', theme);
+        if (this.bgThemeSelect) this.bgThemeSelect.value = theme;
     }
 
     initEvents() {
@@ -447,18 +675,18 @@ class WaterSortGame {
         });
         document.getElementById('btn-close-sound').addEventListener('click', () => {
             this.soundModal.classList.add('hidden');
+            this.saveProgress(); // 모달 닫을 때 설정 자동 저장
         });
 
-        // 배경 테마 변경 이벤트 (드롭다운 선택 시 즉시 배경 전환)
+        // 배경 테마 변경 이벤트
         this.bgThemeSelect.addEventListener('change', (e) => {
             this.applyBgTheme(e.target.value);
-            soundEngine.playPop(); // 선택 확인 효과음
+            soundEngine.playPop();
         });
 
         // BGM 트랙 변경 이벤트
         this.bgmSelect.addEventListener('change', (e) => {
-            const track = e.target.value;
-            soundEngine.changeBgm(track);
+            soundEngine.changeBgm(e.target.value);
         });
 
         // BGM 볼륨 슬라이더
@@ -476,11 +704,19 @@ class WaterSortGame {
         });
 
         // 도움말 모달
-        document.getElementById('btn-info').addEventListener('click', () => {
+        document.getElementById('btn-info') && document.getElementById('btn-info').addEventListener('click', () => {
             this.infoModal.classList.remove('hidden');
         });
         document.getElementById('btn-close-info').addEventListener('click', () => {
             this.infoModal.classList.add('hidden');
+        });
+
+        // 로그아웃 버튼
+        document.getElementById('btn-logout').addEventListener('click', async () => {
+            soundEngine.stopBgm();
+            await supabase.auth.signOut();
+            // 페이지 새로고침으로 로그인 화면으로 돌아가기
+            window.location.reload();
         });
 
         // 되돌리기, 재시작, 다음 단계
@@ -490,7 +726,7 @@ class WaterSortGame {
         document.getElementById('btn-next-stage').addEventListener('click', () => {
             this.winModal.classList.add('hidden');
             this.stage++;
-            this.saveProgress();
+            this.saveProgress(); // 다음 스테이지 Supabase에 저장
             this.startStage(this.stage);
         });
 
@@ -502,11 +738,6 @@ class WaterSortGame {
                 this.render();
             }
         });
-
-        // 기본 BGM 시작 (Chill Lofi)
-        setTimeout(() => {
-            soundEngine.changeBgm('lofi');
-        }, 500);
     }
 
     // 새로운 스테이지 시작 (색상 생성 및 초기 셔플)
@@ -748,6 +979,13 @@ class WaterSortGame {
     }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-    window.gameApp = new WaterSortGame();
+window.addEventListener('DOMContentLoaded', async () => {
+    // AuthManager 초기화 (로그인 화면 이벤트 연결)
+    window._authManager = new AuthManager();
+
+    // 이미 로그인된 세션이 있으면 로그인 화면 없이 바로 게임으로 이동
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session && session.user) {
+        await startGameAfterAuth(session.user);
+    }
 });
