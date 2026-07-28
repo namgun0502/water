@@ -473,43 +473,16 @@ class AuthManager {
         if (btnSpan) btnSpan.textContent = '가입 중...';
 
         try {
-            // Supabase Auth로 회원가입
+            // 1. 회원가입 시도
             const { data: signUpData, error: signUpError } = await sbClient.auth.signUp({ email, password });
 
-            if (signUpError) {
-                const errorMsg = signUpError.message || '';
-                const isAlreadyRegistered = errorMsg.toLowerCase().includes('already registered') || 
-                                           errorMsg.toLowerCase().includes('already exists') ||
-                                           errorMsg.toLowerCase().includes('user_already_exists');
-
-                if (isAlreadyRegistered) {
-                    // 이미 진짜로 가입된 경우에만 우회 자동 로그인 시도
-                    const { data: directSignIn, error: directSignInErr } = await sbClient.auth.signInWithPassword({ email, password });
-                    if (!directSignInErr && directSignIn && directSignIn.user) {
-                        alert('👋 이미 가입된 계정입니다. 해당 계정으로 로그인합니다!');
-                        await startGameAfterAuth(directSignIn.user, false);
-                        return;
-                    }
-                    alert('⚠️ 이미 가입된 이메일입니다. 비밀번호를 확인하시거나 로그인 탭에서 로그인해 주세요.');
-                    this.showError('signup', '이미 가입된 이메일입니다.');
-                    return;
-                }
-
-                // 그 외 일반 에러(예: 비밀번호 부족, Supabase 설정 등)
-                alert('⚠️ 회원가입 실패: ' + errorMsg);
-                this.showError('signup', errorMsg);
-                return;
-            }
-
-            // 가입 후 무조건 로그인 진행하여 확실하게 세션 확보
-            let finalUser = signUpData ? signUpData.user : null;
+            // 2. 가입 성공 여부와 상관없이 곧바로 로그인 시도하여 세션 획득
             const { data: signInData, error: signInError } = await sbClient.auth.signInWithPassword({ email, password });
-            if (signInData && signInData.user) {
-                finalUser = signInData.user;
-            }
+
+            let finalUser = (signInData && signInData.user) ? signInData.user : (signUpData ? signUpData.user : null);
 
             if (finalUser) {
-                // DB에 초기 플레이어 설정 저장
+                // DB에 초기 플레이어 설정 저장 (없으면 생성, 있으면 업데이트)
                 try {
                     await sbClient.from('player_settings').upsert({
                         id: finalUser.id,
@@ -524,17 +497,20 @@ class AuthManager {
                     console.warn('DB 초기 설정 저장 경고:', dbErr);
                 }
 
-                alert('🎉 회원가입 성공! 게임을 시작합니다.');
-                // 가입 + 로그인 성공 → 새 게임 시작
-                await startGameAfterAuth(finalUser, true);
-            } else {
-                alert('회원가입이 완료되었습니다! 로그인 화면에서 로그인해 주세요.');
-                switchTab('login');
+                alert('🎉 반가워요! 로그인되어 게임을 시작합니다.');
+                await startGameAfterAuth(finalUser, !signInData);
+                return;
+            }
+
+            // 둘 다 실패 시 에러 표출
+            if (signUpError) {
+                alert('⚠️ 안내: ' + (signUpError.message || '입력 정보를 확인해 주세요.'));
+                this.showError('signup', signUpError.message);
             }
         } catch (err) {
             console.error('회원가입 에러:', err);
-            alert('회원가입 처리 중 오류 발생: ' + err.message);
-            this.showError('signup', '회원가입 처리 중 오류가 발생했습니다.');
+            alert('처리 중 오류 발생: ' + err.message);
+            this.showError('signup', '처리 중 오류가 발생했습니다.');
         } finally {
             btn.disabled = false;
             if (btnSpan) btnSpan.textContent = '회원가입';
