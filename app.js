@@ -378,6 +378,7 @@ class WaterSortGame {
         this.history = [];
         this.bonusBottlesCount = 1;
         this.isAnimating = false;
+        this.currentBgTheme = 'deep-space'; // 기본 배경 테마
 
         // DOM 요소
         this.bottlesContainer = document.getElementById('bottles-container');
@@ -385,27 +386,48 @@ class WaterSortGame {
         this.winModal = document.getElementById('win-modal');
         this.infoModal = document.getElementById('info-modal');
         this.soundModal = document.getElementById('sound-modal');
+        this.appEl = document.getElementById('app'); // 배경 테마를 적용할 최상위 요소
 
         this.bgmSelect = document.getElementById('bgm-select');
+        this.bgThemeSelect = document.getElementById('bg-theme-select'); // 배경 테마 선택 드롭다운
         this.bgmVolumeSlider = document.getElementById('bgm-volume');
         this.sfxVolumeSlider = document.getElementById('sfx-volume');
         this.bgmValText = document.getElementById('bgm-val-text');
         this.sfxValText = document.getElementById('sfx-val-text');
 
         this.loadProgress();
+        this.applyBgTheme(this.currentBgTheme); // 저장된 배경 테마 즉시 적용
         this.initEvents();
         this.startStage(this.stage);
     }
 
     loadProgress() {
+        // 저장된 스테이지 번호 불러오기
         const savedStage = localStorage.getItem('watersort_stage');
         if (savedStage) {
             this.stage = parseInt(savedStage, 10) || 1;
         }
+        // 저장된 배경 테마 불러오기
+        const savedTheme = localStorage.getItem('watersort_bg_theme');
+        if (savedTheme) {
+            this.currentBgTheme = savedTheme;
+        }
     }
 
     saveProgress() {
+        // 스테이지 번호 저장
         localStorage.setItem('watersort_stage', this.stage);
+    }
+
+    // 배경 테마를 #app에 data-theme 속성으로 적용하고 LocalStorage에 저장하는 함수
+    applyBgTheme(theme) {
+        this.currentBgTheme = theme;
+        this.appEl.setAttribute('data-theme', theme); // CSS가 이 속성을 읽어 배경 변경
+        localStorage.setItem('watersort_bg_theme', theme); // 다음 방문에도 유지
+        // 드롭다운 UI도 선택 값에 맞게 동기화
+        if (this.bgThemeSelect) {
+            this.bgThemeSelect.value = theme;
+        }
     }
 
     initEvents() {
@@ -425,6 +447,12 @@ class WaterSortGame {
         });
         document.getElementById('btn-close-sound').addEventListener('click', () => {
             this.soundModal.classList.add('hidden');
+        });
+
+        // 배경 테마 변경 이벤트 (드롭다운 선택 시 즉시 배경 전환)
+        this.bgThemeSelect.addEventListener('change', (e) => {
+            this.applyBgTheme(e.target.value);
+            soundEngine.playPop(); // 선택 확인 효과음
         });
 
         // BGM 트랙 변경 이벤트

@@ -52,7 +52,53 @@ html, body {
     background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 70%);
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
     overflow: hidden;
+    transition: background 0.8s ease; /* 테마 전환 부드럽게 */
 }
+
+/* ====== 배경 테마 6종 정의 ====== */
+
+/* 1. 🌌 Deep Space - 기본 딥 다크 우주 퍼플 (기본값) */
+#app[data-theme="deep-space"] {
+    background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 70%);
+}
+#app[data-theme="deep-space"] .bg-glow-1 { background: #a855f7; }
+#app[data-theme="deep-space"] .bg-glow-2 { background: #38bdf8; }
+
+/* 2. 🌊 Ocean Depths - 심해 딥 블루 그라데이션 */
+#app[data-theme="ocean-depths"] {
+    background: radial-gradient(circle at 50% 0%, #0c3547 0%, #0a0f1e 70%);
+}
+#app[data-theme="ocean-depths"] .bg-glow-1 { background: #0ea5e9; }
+#app[data-theme="ocean-depths"] .bg-glow-2 { background: #06b6d4; }
+
+/* 3. 🌸 Cherry Blossom - 벚꽃 핑크 파스텔 */
+#app[data-theme="cherry-blossom"] {
+    background: radial-gradient(circle at 50% 0%, #3b0a2a 0%, #1a0d1a 70%);
+}
+#app[data-theme="cherry-blossom"] .bg-glow-1 { background: #ec4899; }
+#app[data-theme="cherry-blossom"] .bg-glow-2 { background: #f472b6; }
+
+/* 4. 🌿 Forest Night - 아늑한 다크 포레스트 초록 */
+#app[data-theme="forest-night"] {
+    background: radial-gradient(circle at 50% 0%, #0a2e1a 0%, #061510 70%);
+}
+#app[data-theme="forest-night"] .bg-glow-1 { background: #22c55e; }
+#app[data-theme="forest-night"] .bg-glow-2 { background: #16a34a; }
+
+/* 5. 🌅 Sunset Glow - 따뜻한 석양 노을 오렌지/핑크 */
+#app[data-theme="sunset-glow"] {
+    background: radial-gradient(circle at 50% 0%, #3b1a08 0%, #1a0a05 70%);
+}
+#app[data-theme="sunset-glow"] .bg-glow-1 { background: #f97316; }
+#app[data-theme="sunset-glow"] .bg-glow-2 { background: #fb923c; }
+
+/* 6. 🍬 Cotton Candy - 몽환적인 파스텔 라벤더 */
+#app[data-theme="cotton-candy"] {
+    background: radial-gradient(circle at 50% 0%, #1a0b3b 0%, #0a0818 70%);
+}
+#app[data-theme="cotton-candy"] .bg-glow-1 { background: #c084fc; }
+#app[data-theme="cotton-candy"] .bg-glow-2 { background: #a78bfa; }
+
 
 /* 배경 오로라 분위기 빛 효과 */
 .bg-glow {
