@@ -5,18 +5,18 @@
  * 초보자분들도 한눈에 이해할 수 있도록 코드 전체 구조와 로직에 한국어 주석을 다 달았습니다.
  */
 
-// 1. 액체 색상 파렛트 정의 (CSS 변수와 매핑)
+// 1. 액체 색상 파렛트 정의 (시각적 구별이 뚜렷한 고대비 파스텔/네온 힐링 파렛트)
 const PALETTE = [
-    '#ff5964', // 1: Coral Red
-    '#ffad5a', // 2: Apricot Orange
-    '#fec051', // 3: Sunflower Yellow
-    '#4cd964', // 4: Emerald Green
-    '#10b981', // 5: Mint Teal
-    '#38bdf8', // 6: Sky Blue
-    '#6366f1', // 7: Indigo
-    '#a855f7', // 8: Purple
-    '#ec4899', // 9: Berry Pink
-    '#94a3b8'  // 10: Silver
+    '#FF2A55', // 1: Vibrant Cherry Red (체리 레드)
+    '#FF8C00', // 2: Vivid Mango Orange (망고 주황)
+    '#FFE600', // 3: Bright Lemon Yellow (레몬 노랑)
+    '#00E676', // 4: Neon Lime Green (라임 연두)
+    '#006400', // 5: Deep Forest Green (진한 초록)
+    '#00E5FF', // 6: Electric Cyan Sky (맑은 하늘색)
+    '#1565C0', // 7: Deep Cobalt Blue (진한 코발트 파랑)
+    '#AA00FF', // 8: Electric Royal Violet (선명한 보라)
+    '#FF4081', // 9: Bright Berry Pink (밝은 분홍)
+    '#E0E0E0'  // 10: Pearl White Silver (밝은 은백색)
 ];
 
 // 병 하나당 들어갈 수 있는 최대 액체 칸수 (기본 4칸)
