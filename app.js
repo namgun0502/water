@@ -447,7 +447,7 @@ class WaterSortGame {
 
         // 되돌리기, 재시작, 병 추가, 다음 단계
         document.getElementById('btn-undo').addEventListener('click', () => this.undoMove());
-        document.getElementById('btn-reset').addEventListener('click', () => this.startStage(this.stage));
+        document.getElementById('btn-reset').addEventListener('click', () => this.resetStage());
         document.getElementById('btn-add-bottle').addEventListener('click', () => this.addExtraBottle());
 
         document.getElementById('btn-next-stage').addEventListener('click', () => {
@@ -463,6 +463,7 @@ class WaterSortGame {
         }, 500);
     }
 
+    // 새로운 스테이지 시작 (색상 생성 및 초기 셔플)
     startStage(stageNum) {
         this.stageNumEl.textContent = stageNum;
         this.selectedBottleIdx = null;
@@ -495,6 +496,21 @@ class WaterSortGame {
             this.bottles.push([]);
         }
 
+        // 🌟 스테이지 최초 상태 보관 (재시작 시 원래 배치 그대로 복원하기 위함)
+        this.initialBottles = this.bottles.map(b => [...b]);
+
+        this.render();
+    }
+
+    // 🌟 현재 스테이지 재시작 (원래 처음 생성되었던 배치 그대로 복원)
+    resetStage() {
+        if (this.isAnimating) return;
+        soundEngine.playPop();
+        
+        // 처음 배치 상태 그대로 원복
+        this.bottles = this.initialBottles.map(b => [...b]);
+        this.selectedBottleIdx = null;
+        this.history = [];
         this.render();
     }
 
