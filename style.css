@@ -258,12 +258,41 @@ html, body {
     position: relative;
     z-index: 10;
     display: flex;
-    justify-content: space-around;
+    flex-direction: column;  /* 버튼 그룹 + 안내 문구를 위아래로 쌓음 */
     align-items: center;
-    padding: 16px 20px 28px;
+    gap: 10px;
+    padding: 14px 20px 22px;
     background: rgba(15, 23, 42, 0.85);
     backdrop-filter: blur(12px);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* 버튼들을 가로로 나란히 배치하는 행 */
+.btn-row {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    gap: 24px;
+}
+
+/* 버튼 아래 BGM 안내 문구 */
+.bgm-hint {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--accent-glow);
+    opacity: 0.8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    letter-spacing: 0.3px;
+    animation: hintPulse 2.5s ease-in-out infinite; /* 살짝 반짝이는 힌트 효과 */
+}
+
+/* 살짝 밝아졌다 어두워지는 힌트 애니메이션 */
+@keyframes hintPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
 }
 
 .control-btn {

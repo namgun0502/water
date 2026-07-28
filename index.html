@@ -52,17 +52,26 @@
 
         <!-- 하단 컨트롤 버튼 영역 (도구 아이템) -->
         <footer class="game-controls">
-            <!-- 되돌리기 버튼 -->
-            <button id="btn-undo" class="control-btn" title="한 단계를 되돌립니다">
-                <div class="btn-icon"><i class="fa-solid fa-rotate-left"></i></div>
-                <span class="btn-text">되돌리기</span>
-            </button>
+            <!-- 버튼 그룹 -->
+            <div class="btn-row">
+                <!-- 되돌리기 버튼 -->
+                <button id="btn-undo" class="control-btn" title="한 단계를 되돌립니다">
+                    <div class="btn-icon"><i class="fa-solid fa-rotate-left"></i></div>
+                    <span class="btn-text">되돌리기</span>
+                </button>
 
-            <!-- 재시작 버튼 -->
-            <button id="btn-reset" class="control-btn highlight" title="현재 스테이지를 처음부터 다시 시작합니다">
-                <div class="btn-icon"><i class="fa-solid fa-arrows-rotate"></i></div>
-                <span class="btn-text">재시작</span>
-            </button>
+                <!-- 재시작 버튼 -->
+                <button id="btn-reset" class="control-btn highlight" title="현재 스테이지를 처음부터 다시 시작합니다">
+                    <div class="btn-icon"><i class="fa-solid fa-arrows-rotate"></i></div>
+                    <span class="btn-text">재시작</span>
+                </button>
+            </div>
+
+            <!-- 버튼 아래 BGM 안내 문구 -->
+            <p class="bgm-hint">
+                <i class="fa-solid fa-sliders"></i>
+                설정에서 힐링 BGM을 바꿔보세요!
+            </p>
         </footer>
 
         <!-- 🔊 사운드 & BGM 설정 모달 -->
