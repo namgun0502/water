@@ -127,15 +127,17 @@ html, body {
     background: rgba(255, 255, 255, 0.18);
 }
 
-/* 5. 퍼즐 메인 보드 영역 */
+/* 5. 퍼즐 메인 보드 영역 (상하 수직 공간 최대 활용) */
 .game-board-container {
     position: relative;
     flex: 1;
     z-index: 5;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 10px 16px;
+    justify-content: space-around; /* 위아래 여유 공간을 꽉 채움 */
+    padding: 16px 12px;
+    width: 100%;
 }
 
 /* 물 붓기 SVG 물줄기 overlay */
@@ -149,49 +151,26 @@ html, body {
     z-index: 20;
 }
 
-/* 유리병 배치 격자 */
+/* 유리병 배치 격자 (상하 다단 배치 최적화) */
 .bottles-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-content: center;
-    gap: 24px 18px;
+    align-content: space-evenly; /* 수직 줄 간격을 넓게 활용 */
+    gap: 32px 14px; /* 상하 줄간격 32px로 늘려 시원하게 수직 활용 */
     width: 100%;
-    max-width: 420px;
-    transition: gap 0.3s;
+    max-width: 440px;
+    height: 100%;
+    max-height: 520px; /* 상하 공간 520px까지 충분히 사용 */
 }
 
-/* 🌟 병 개수가 9~10개일 때 (Compact 레이아웃) */
-.bottles-container.compact {
-    gap: 16px 12px;
-}
-.bottles-container.compact .bottle-wrapper {
-    width: 45px;
-    height: 152px;
-}
-.bottles-container.compact .bottle-rim {
-    width: 50px;
-}
-
-/* 🌟 병 개수가 11~14개 이상일 때 (Compact Mini 레이아웃) */
-.bottles-container.compact-mini {
-    gap: 12px 8px;
-}
-.bottles-container.compact-mini .bottle-wrapper {
-    width: 38px;
-    height: 136px;
-}
-.bottles-container.compact-mini .bottle-rim {
-    width: 43px;
-}
-
-/* 6. 유리병 (Bottle) 디자인 & 애니메이션 */
+/* 6. 유리병 (Bottle) 디자인 & 애니메이션 (축소 없이 시원한 크기 유지) */
 .bottle-wrapper {
     position: relative;
-    width: 52px;
-    height: 175px;
+    width: 50px;
+    height: 168px;
     cursor: pointer;
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s, height 0.3s;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* 선택된 병 튀어오름 효과 */

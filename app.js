@@ -520,15 +520,7 @@ class WaterSortGame {
 
     render() {
         this.bottlesContainer.innerHTML = '';
-
-        // 🌟 병 개수가 9개 이상으로 많아지면 compact 레이아웃 클래스 부여
-        if (this.bottles.length >= 11) {
-            this.bottlesContainer.className = 'bottles-container compact-mini';
-        } else if (this.bottles.length >= 9) {
-            this.bottlesContainer.className = 'bottles-container compact';
-        } else {
-            this.bottlesContainer.className = 'bottles-container';
-        }
+        this.bottlesContainer.className = 'bottles-container';
 
         this.bottles.forEach((bottle, bIdx) => {
             const wrapper = document.createElement('div');
