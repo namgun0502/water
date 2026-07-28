@@ -24,14 +24,12 @@ CREATE TABLE IF NOT EXISTS public.player_settings (
 -- RLS 활성화
 ALTER TABLE public.player_settings ENABLE ROW LEVEL SECURITY;
 
--- 정책 1: 본인 데이터 조회 허용
-CREATE POLICY "본인 데이터 조회" ON public.player_settings
-    FOR SELECT USING (auth.uid() = id);
+-- 기존 정책 삭제 후 통합 정책 적용
+DROP POLICY IF EXISTS "본인 데이터 조회" ON public.player_settings;
+DROP POLICY IF EXISTS "본인 데이터 삽입" ON public.player_settings;
+DROP POLICY IF EXISTS "본인 데이터 수정" ON public.player_settings;
 
--- 정책 2: 본인 데이터 삽입 허용 (회원가입 시 최초 1회)
-CREATE POLICY "본인 데이터 삽입" ON public.player_settings
-    FOR INSERT WITH CHECK (auth.uid() = id);
+-- 본인 데이터의 모든 작업(조회, 삽입, 수정, 삭제) 허용
+CREATE POLICY "본인 데이터 전권 허용" ON public.player_settings
+    FOR ALL USING (auth.uid() = id) WITH CHECK (auth.uid() = id);
 
--- 정책 3: 본인 데이터 수정 허용 (설정 변경, 스테이지 업데이트)
-CREATE POLICY "본인 데이터 수정" ON public.player_settings
-    FOR UPDATE USING (auth.uid() = id);

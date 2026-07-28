@@ -484,7 +484,7 @@ class AuthManager {
             if (finalUser) {
                 // DB에 초기 플레이어 설정 저장 (없으면 생성, 있으면 업데이트)
                 try {
-                    await sbClient.from('player_settings').upsert({
+                    const { error: dbError } = await sbClient.from('player_settings').upsert({
                         id: finalUser.id,
                         nickname: nickname,
                         stage: 1,
@@ -493,6 +493,9 @@ class AuthManager {
                         bgm_volume: 60,
                         sfx_volume: 80
                     });
+                    if (dbError) {
+                        console.error('DB 저장 실패 세부원인:', dbError);
+                    }
                 } catch (dbErr) {
                     console.warn('DB 초기 설정 저장 경고:', dbErr);
                 }
