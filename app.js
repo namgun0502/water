@@ -479,40 +479,42 @@ class AuthManager {
             if (signUpError) {
                 let msg = signUpError.message;
                 if (signUpError.status === 422) {
-                    msg = '비밀번호는 최소 6자리 이상이어야 하며, 올바른 이메일 형식을 입력하셔야 합니다.';
+                    msg = '이미 존재하는 이메일이거나 비밀번호가 6자리 미만입니다.';
                 }
-                alert('⚠️ 회원가입 안 됨: ' + msg);
+                alert('⚠️ 회원가입 실패: ' + msg);
                 this.showError('signup', msg);
                 return;
             }
 
+            // 가입 후 무조건 로그인 진행하여 확실하게 세션 확보
             let finalUser = signUpData ? signUpData.user : null;
-            if (!signUpData || !signUpData.session) {
-                const { data: signInData, error: signInError } = await sbClient.auth.signInWithPassword({ email, password });
-                if (signInError || !signInData || !signInData.user) {
-                    alert('가입은 완료되었습니다! 로그인 탭에서 로그인해 주세요.');
-                    this.showError('signup', '가입 완료! 로그인 탭에서 로그인해 주세요.');
-                    switchTab('login');
-                    return;
-                }
+            const { data: signInData, error: signInError } = await sbClient.auth.signInWithPassword({ email, password });
+            if (signInData && signInData.user) {
                 finalUser = signInData.user;
             }
 
             if (finalUser) {
                 // DB에 초기 플레이어 설정 저장
-                await sbClient.from('player_settings').upsert({
-                    id: finalUser.id,
-                    nickname: nickname,
-                    stage: 1,
-                    bg_theme: 'deep-space',
-                    bgm_track: 'lofi',
-                    bgm_volume: 60,
-                    sfx_volume: 80
-                });
+                try {
+                    await sbClient.from('player_settings').upsert({
+                        id: finalUser.id,
+                        nickname: nickname,
+                        stage: 1,
+                        bg_theme: 'deep-space',
+                        bgm_track: 'lofi',
+                        bgm_volume: 60,
+                        sfx_volume: 80
+                    });
+                } catch (dbErr) {
+                    console.warn('DB 초기 설정 저장 경고:', dbErr);
+                }
 
-                alert('회원가입 성공! 게임을 시작합니다.');
+                alert('🎉 회원가입 성공! 게임을 시작합니다.');
                 // 가입 + 로그인 성공 → 새 게임 시작
                 await startGameAfterAuth(finalUser, true);
+            } else {
+                alert('회원가입이 완료되었습니다! 로그인 화면에서 로그인해 주세요.');
+                switchTab('login');
             }
         } catch (err) {
             console.error('회원가입 에러:', err);
