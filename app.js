@@ -449,10 +449,9 @@ class WaterSortGame {
             this.infoModal.classList.add('hidden');
         });
 
-        // 되돌리기, 재시작, 병 추가, 다음 단계
+        // 되돌리기, 재시작, 다음 단계
         document.getElementById('btn-undo').addEventListener('click', () => this.undoMove());
         document.getElementById('btn-reset').addEventListener('click', () => this.resetStage());
-        document.getElementById('btn-add-bottle').addEventListener('click', () => this.addExtraBottle());
 
         document.getElementById('btn-next-stage').addEventListener('click', () => {
             this.winModal.classList.add('hidden');
@@ -474,9 +473,9 @@ class WaterSortGame {
         this.history = [];
         this.isAnimating = false;
 
-        // 🌟 스테이지 난이도 공식: 1~2단계 3색 -> 최대 12색 (총 14개 병) 확장
-        const colorCount = Math.min(3 + Math.floor((stageNum - 1) / 2), 12);
-        const emptyBottleCount = 2;
+        // 🌟 스테이지 난이도 공식: 1~2단계 3색 -> 최대 11색 (+ 기본 빈 병 3개 = 총 14개 병)
+        const colorCount = Math.min(3 + Math.floor((stageNum - 1) / 2), 11);
+        const emptyBottleCount = 3; // 🌟 기본 제공 빈 병을 3개로 확장하여 재시작 시에도 쾌적함 보장!
         const selectedColors = PALETTE.slice(0, colorCount);
 
         let colorPool = [];
@@ -707,21 +706,6 @@ class WaterSortGame {
         soundEngine.playPop();
         this.bottles = this.history.pop();
         this.selectedBottleIdx = null;
-        this.render();
-    }
-
-    addExtraBottle() {
-        if (this.isAnimating || this.bonusBottlesCount <= 0) return;
-        soundEngine.playPop();
-        this.bottles.push([]);
-        this.bonusBottlesCount--;
-
-        const badge = document.getElementById('add-bottle-badge');
-        badge.textContent = this.bonusBottlesCount;
-        if (this.bonusBottlesCount <= 0) {
-            badge.style.display = 'none';
-        }
-
         this.render();
     }
 }
