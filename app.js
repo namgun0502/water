@@ -582,15 +582,17 @@ function switchTab(tab) {
 
 // HTML onclick 전역 핸들러
 async function handleLoginAction() {
-    if (window._authManager) {
-        await window._authManager.handleLogin();
+    if (!window._authManager) {
+        window._authManager = new AuthManager();
     }
+    await window._authManager.handleLogin();
 }
 
 async function handleSignupAction() {
-    if (window._authManager) {
-        await window._authManager.handleSignup();
+    if (!window._authManager) {
+        window._authManager = new AuthManager();
     }
+    await window._authManager.handleSignup();
 }
 
 // 로그인 성공 후 이어서/새로 시작 선택 및 게임 초기화
