@@ -460,6 +460,15 @@ class WaterSortGame {
             this.startStage(this.stage);
         });
 
+        // 🌟 배경 바깥 영역 터치/클릭 시 병 선택 취소 (Deselect)
+        this.bottlesContainer.parentElement.addEventListener('click', (e) => {
+            if (!e.target.closest('.bottle-wrapper') && this.selectedBottleIdx !== null && !this.isAnimating) {
+                soundEngine.playPop();
+                this.selectedBottleIdx = null;
+                this.render();
+            }
+        });
+
         // 기본 BGM 시작 (Chill Lofi)
         setTimeout(() => {
             soundEngine.changeBgm('lofi');
@@ -529,7 +538,10 @@ class WaterSortGame {
                 wrapper.classList.add('selected');
             }
 
-            wrapper.addEventListener('click', () => this.handleBottleClick(bIdx));
+            wrapper.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.handleBottleClick(bIdx);
+            });
 
             const bottleEl = document.createElement('div');
             bottleEl.className = 'bottle';
