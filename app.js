@@ -410,15 +410,22 @@ class AuthManager {
         }
     }
 
+    // 이메일 양식 자동 보정 (아이디만 입력해도 @water.com 자동 부착)
+    formatEmail(raw) {
+        if (!raw) return '';
+        return raw.includes('@') ? raw : `${raw}@water.com`;
+    }
+
     // 로그인 처리
     async handleLogin() {
-        const email    = document.getElementById('login-email').value.trim();
+        let email      = document.getElementById('login-email').value.trim();
         const password = document.getElementById('login-password').value;
         const btn      = document.getElementById('btn-login');
 
+        email = this.formatEmail(email);
         this.hideError('login');
 
-        if (!email) { this.showError('login', '이메일을 입력해 주세요.'); return; }
+        if (!email) { this.showError('login', '아이디 또는 이메일을 입력해 주세요.'); return; }
         if (!password) { this.showError('login', '비밀번호를 입력해 주세요.'); return; }
 
         btn.disabled = true;
@@ -428,7 +435,7 @@ class AuthManager {
             const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
 
             if (error) {
-                this.showError('login', error.message || '이메일 또는 비밀번호가 올바르지 않습니다.');
+                this.showError('login', '아이디(이메일) 또는 비밀번호가 올바르지 않습니다.');
                 return;
             }
 
@@ -451,13 +458,14 @@ class AuthManager {
         const btn        = document.getElementById('btn-signup');
 
         const nickname = nicknameEl ? nicknameEl.value.trim() : '';
-        const email    = emailEl ? emailEl.value.trim() : '';
+        let email      = emailEl ? emailEl.value.trim() : '';
         const password = passwordEl ? passwordEl.value : '';
 
+        email = this.formatEmail(email);
         this.hideError('signup');
 
         if (!nickname) { alert('닉네임을 입력해 주세요.'); this.showError('signup', '닉네임을 입력해 주세요.'); return; }
-        if (!email) { alert('이메일을 입력해 주세요.'); this.showError('signup', '이메일을 입력해 주세요.'); return; }
+        if (!email) { alert('아이디(이메일)를 입력해 주세요.'); this.showError('signup', '아이디(이메일)를 입력해 주세요.'); return; }
         if (password.length < 6) { alert('비밀번호는 6자리 이상이어야 합니다.'); this.showError('signup', '비밀번호는 6자리 이상이어야 합니다.'); return; }
 
         btn.disabled = true;

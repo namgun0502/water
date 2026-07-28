@@ -42,8 +42,8 @@
             <!-- 로그인 폼 -->
             <form id="login-form" class="auth-form" onsubmit="handleLoginAction(); return false;">
                 <div class="auth-input-group">
-                    <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="login-email" class="auth-input" placeholder="이메일 주소" autocomplete="email">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="login-email" class="auth-input" placeholder="아이디 또는 이메일" autocomplete="username">
                 </div>
                 <div class="auth-input-group">
                     <i class="fa-solid fa-lock"></i>
@@ -59,12 +59,12 @@
             <!-- 회원가입 폼 (기본적으로 숨김) -->
             <form id="signup-form" class="auth-form hidden" onsubmit="handleSignupAction(); return false;">
                 <div class="auth-input-group">
-                    <i class="fa-solid fa-user"></i>
+                    <i class="fa-solid fa-id-card"></i>
                     <input type="text" id="signup-nickname" class="auth-input" placeholder="닉네임 (표시 이름)" maxlength="10">
                 </div>
                 <div class="auth-input-group">
-                    <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="signup-email" class="auth-input" placeholder="이메일 주소" autocomplete="email">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="signup-email" class="auth-input" placeholder="아이디 (또는 이메일)" autocomplete="username">
                 </div>
                 <div class="auth-input-group">
                     <i class="fa-solid fa-lock"></i>
