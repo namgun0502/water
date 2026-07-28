@@ -4,33 +4,33 @@
  * ==========================================================================
  */
 
-// 1. ?�체 ?�상 ?�렛???�의 (?�각??구별???�렷??20가지 고�?�??�스???�온 ?�링 ?�렛??
+// 1. 액체 색상 파렛트 정의 (시각적 구별이 뚜렷한 20가지 고대비 파스텔/네온 힐링 파렛트)
 const PALETTE = [
-    '#FF2A55', // 1: Cherry Red (체리 ?�드)
+    '#FF2A55', // 1: Cherry Red (체리 레드)
     '#FF8C00', // 2: Mango Orange (망고 주황)
-    '#FFE600', // 3: Lemon Yellow (?�몬 ?�랑)
-    '#00E676', // 4: Lime Green (?�임 ?�두)
+    '#FFE600', // 3: Lemon Yellow (레몬 노랑)
+    '#00E676', // 4: Lime Green (라임 연두)
     '#006400', // 5: Forest Green (진한 초록)
-    '#00E5FF', // 6: Cyan Sky (밝�? ?�늘??
-    '#1565C0', // 7: Cobalt Blue (진한 코발???�랑)
-    '#AA00FF', // 8: Royal Violet (?�명??보라)
-    '#FF4081', // 9: Berry Pink (밝�? 분홍)
-    '#E0E0E0', // 10: Pearl Silver (밝�? ?�백색)
-    '#795548', // 11: Deep Chocolate Brown (초콜�?브라??
-    '#FF7043', // 12: Coral Tangerine (코랄 ?��?�?
-    '#004D40', // 13: Deep Teal (짙�? �?��)
-    '#4A148C', // 14: Plum Purple (?�럼 ?�플)
-    '#D500F9', // 15: Magenta Rose (마젠?� 로즈 - ?�규)
-    '#827717', // 16: Sage Olive (?�이지 ?�리�?- ?�규)
-    '#BF360C', // 17: Deep Caramel (카라�?브라??- ?�규)
-    '#1A237E', // 18: Midnight Navy (미드?�잇 ?�이�?- ?�규)
-    '#FFD600', // 19: Deep Bronze Gold (브론�?골드 - ?�규)
-    '#A7FFEB'  // 20: Cotton Mint (?�사??민트 - ?�규)
+    '#00E5FF', // 6: Cyan Sky (밝은 하늘색)
+    '#1565C0', // 7: Cobalt Blue (진한 코발트 파랑)
+    '#AA00FF', // 8: Royal Violet (선명한 보라)
+    '#FF4081', // 9: Berry Pink (밝은 분홍)
+    '#E0E0E0', // 10: Pearl Silver (밝은 은백색)
+    '#795548', // 11: Deep Chocolate Brown (초콜릿 브라운)
+    '#FF7043', // 12: Coral Tangerine (코랄 탠저린)
+    '#004D40', // 13: Deep Teal (짙은 청록)
+    '#4A148C', // 14: Plum Purple (플럼 퍼플)
+    '#D500F9', // 15: Magenta Rose (마젠타 로즈 - 신규)
+    '#827717', // 16: Sage Olive (세이지 올리브 - 신규)
+    '#BF360C', // 17: Deep Caramel (카라멜 브라운 - 신규)
+    '#1A237E', // 18: Midnight Navy (미드나잇 네이비 - 신규)
+    '#FFD600', // 19: Deep Bronze Gold (브론즈 골드 - 신규)
+    '#A7FFEB'  // 20: Cotton Mint (솜사탕 민트 - 신규)
 ];
 
 const BOTTLE_CAPACITY = 4;
 
-// 2. Web Audio API 기반 ?�디???�진 & 6�?BGM �??�운??매니?�
+// 2. Web Audio API 기반 오디오 엔진 & 6종 BGM 및 사운드 매니저
 class SoundManager {
     constructor() {
         this.ctx = null;
@@ -45,13 +45,13 @@ class SoundManager {
         this.bgmNodes = [];
     }
 
-    // AudioContext 초기??�?브라?��? ?�동?�생 ?�한(Autoplay) ?�류 ?�결 ?�치
+    // AudioContext 초기화 및 브라우저 자동재생 제한(Autoplay) 오류 해결 패치
     init() {
         if (!this.ctx) {
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             this.ctx = new AudioContext();
 
-            // SFX �?BGM ?�립 볼륨 ?�어 ?�드 구축
+            // SFX 및 BGM 독립 볼륨 제어 노드 구축
             this.sfxGain = this.ctx.createGain();
             this.sfxGain.gain.value = this.sfxVolume;
             this.sfxGain.connect(this.ctx.destination);
@@ -61,13 +61,13 @@ class SoundManager {
             this.bgmGain.connect(this.ctx.destination);
         }
 
-        // ?�시중�? ?�태(suspended) ?�제 -> ?�리가 ???�는 ?�류 100% 보장
+        // 일시중지 상태(suspended) 해제 -> 소리가 안 나는 오류 100% 보장
         if (this.ctx.state === 'suspended') {
             this.ctx.resume();
         }
     }
 
-    // SFX ?�과??볼륨 변�?(0.0 ~ 1.0)
+    // SFX 효과음 볼륨 변경 (0.0 ~ 1.0)
     setSfxVolume(val) {
         this.sfxVolume = val;
         if (this.sfxGain) {
@@ -75,7 +75,7 @@ class SoundManager {
         }
     }
 
-    // BGM 배경??볼륨 변�?(0.0 ~ 1.0)
+    // BGM 배경음 볼륨 변경 (0.0 ~ 1.0)
     setBgmVolume(val) {
         this.bgmVolume = val;
         if (this.bgmGain) {
@@ -83,7 +83,8 @@ class SoundManager {
         }
     }
 
-    // �??�택 ?�과??    playPop() {
+    // 병 선택 효과음
+    playPop() {
         this.init();
         if (this.sfxVolume <= 0) return;
 
@@ -104,7 +105,7 @@ class SoundManager {
         osc.stop(this.ctx.currentTime + 0.08);
     }
 
-    // 물을 붓는 ASMR 물리 ?�리
+    // 물을 붓는 ASMR 물리 소리
     playPourSound(durationMs = 400) {
         this.init();
         if (this.sfxVolume <= 0) return;
@@ -137,7 +138,8 @@ class SoundManager {
         noise.start();
     }
 
-    // ?�리 ?�리???�파�?    playWinFanfare() {
+    // 승리 클리어 팡파르
+    playWinFanfare() {
         this.init();
         if (this.sfxVolume <= 0) return;
 
@@ -161,7 +163,8 @@ class SoundManager {
         });
     }
 
-    // ?�� 6�?BGM 배경?�악 ?�생 루프 컨트�?    changeBgm(track) {
+    // 🎵 6종 BGM 배경음악 재생 루프 컨트롤
+    changeBgm(track) {
         this.currentBgmTrack = track;
         this.stopBgm();
 
@@ -187,7 +190,7 @@ class SoundManager {
         this.bgmNodes = [];
     }
 
-    // 1. Chill Lofi BGM (?��?: ?�안??로파??
+    // 1. Chill Lofi BGM (유지: 편안한 로파이)
     startLofiBgm() {
         const chords = [
             [261.63, 329.63, 392.00, 493.88], // Cmaj7
@@ -221,7 +224,7 @@ class SoundManager {
         this.bgmInterval = setInterval(playStep, 2000);
     }
 
-    // 2. Soft Moonlight BGM (?�규: 부?�러???�빛 - 맑고 부?�러???�르?��???
+    // 2. Soft Moonlight BGM (신규: 부드러운 달빛 - 맑고 부드러운 아르페지오)
     startMoonlightBgm() {
         const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 523.25, 392.00, 329.63];
         let step = 0;
@@ -230,7 +233,8 @@ class SoundManager {
             const freq = notes[step % notes.length];
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
-            osc.type = 'sine'; // ?�주 부?�러???�인??            osc.frequency.value = freq;
+            osc.type = 'sine'; // 아주 부드러운 사인파
+            osc.frequency.value = freq;
 
             gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.2);
@@ -247,7 +251,7 @@ class SoundManager {
         this.bgmInterval = setInterval(playNote, 700);
     }
 
-    // 3. Soft Breeze BGM (?�규: ?�잔??봄바??- ?�늑???�각???�링 멜로??
+    // 3. Soft Breeze BGM (신규: 잔잔한 봄바람 - 아늑한 삼각파 힐링 멜로디)
     startBreezeBgm() {
         const breezeMelody = [329.63, 392.00, 440.00, 523.25, 440.00, 392.00];
         let step = 0;
@@ -274,7 +278,7 @@ class SoundManager {
         this.bgmInterval = setInterval(playBreezeStep, 1000);
     }
 
-    // 4. Starlight Lullaby BGM (?�규: ?�근??별빛 - ?�르�?같�? ?�잔??
+    // 4. Starlight Lullaby BGM (신규: 포근한 별빛 - 오르골 같은 잔잔함)
     startStarlightBgm() {
         const starNotes = [523.25, 587.33, 659.25, 783.99, 659.25, 587.33];
         let step = 0;
@@ -301,7 +305,7 @@ class SoundManager {
         this.bgmInterval = setInterval(playStar, 650);
     }
 
-    // 5. Cloud Ambient BGM (?�규: 부?�러??구름 - ?�늑???�비?�트 ?�드)
+    // 5. Cloud Ambient BGM (신규: 부드러운 구름 - 아늑한 앰비언트 패드)
     startCloudBgm() {
         const cloudPads = [
             [174.61, 261.63, 329.63], // Fmaj
@@ -335,7 +339,7 @@ class SoundManager {
         this.bgmInterval = setInterval(playCloudPad, 2600);
     }
 
-    // 6. Cozy Jazz BGM (카페 ?�늑 ?�즈)
+    // 6. Cozy Jazz BGM (카페 아늑 재즈)
     startJazzBgm() {
         const jazzNotes = [220.00, 277.18, 329.63, 415.30, 440.00, 329.63];
         let step = 0;
@@ -366,19 +370,18 @@ class SoundManager {
 const soundEngine = new SoundManager();
 
 // ============================================================
-// 4. Supabase ?�라?�언??초기??// window.supabase??SDK가 ?�동?�로 만드???�역변?�입?�다.
-// ?�름 충돌??막기 ?�해 ?�리 변?�는 sbClient�??�름짓습?�다.
+// 4. Supabase 클라이언트 초기화
 // ============================================================
 const SUPABASE_URL  = 'https://qzhgsshyhmnczmreagqd.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6aGdzc2h5aG1uY3ptcmVhZ3FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyNzc0NzksImV4cCI6MjA5Nzg1MzQ3OX0.2NZxyClmIpj7WtUuZtexZqAMuTnC7udF5FejwitzvcU';
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
 
 // ============================================================
-// 5. AuthManager - 로그??/ ?�원가??/ 로그?�웃 ?�당
+// 5. AuthManager - 로그인 / 회원가입 / 로그아웃 담당
 // ============================================================
 class AuthManager {
     constructor() {
-        // 로그???�면 DOM ?�소
+        // 로그인 화면 DOM 요소
         this.authScreen    = document.getElementById('auth-screen');
         this.loginForm     = document.getElementById('login-form');
         this.signupForm    = document.getElementById('signup-form');
@@ -388,16 +391,18 @@ class AuthManager {
         this.initAuthEvents();
     }
 
-    // 로그??/ ?�원가???�벤???�결
+    // 로그인 / 회원가입 이벤트 연결
     initAuthEvents() {
-        // 로그?????�출 ?�벤??        if (this.loginForm) {
+        // 로그인 폼 제출 이벤트
+        if (this.loginForm) {
             this.loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 await this.handleLogin();
             });
         }
 
-        // ?�원가?????�출 ?�벤??        if (this.signupForm) {
+        // 회원가입 폼 제출 이벤트
+        if (this.signupForm) {
             this.signupForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 await this.handleSignup();
@@ -405,7 +410,7 @@ class AuthManager {
         }
     }
 
-    // 로그??처리
+    // 로그인 처리
     async handleLogin() {
         const email    = document.getElementById('login-email').value.trim();
         const password = document.getElementById('login-password').value;
@@ -413,32 +418,32 @@ class AuthManager {
 
         this.hideError('login');
 
-        if (!email) { this.showError('login', '?�메?�을 ?�력??주세??'); return; }
-        if (!password) { this.showError('login', '비�?번호�??�력??주세??'); return; }
+        if (!email) { this.showError('login', '이메일을 입력해 주세요.'); return; }
+        if (!password) { this.showError('login', '비밀번호를 입력해 주세요.'); return; }
 
         btn.disabled = true;
-        btn.querySelector('span').textContent = '로그??�?..';
+        btn.querySelector('span').textContent = '로그인 중...';
 
         try {
             const { data, error } = await sbClient.auth.signInWithPassword({ email, password });
 
             if (error) {
-                this.showError('login', error.message || '?�메???�는 비�?번호가 ?�바르�? ?�습?�다.');
+                this.showError('login', error.message || '이메일 또는 비밀번호가 올바르지 않습니다.');
                 return;
             }
 
-            // 로그???�공 ??게임 ?�작
+            // 로그인 성공 → 게임 시작
             await startGameAfterAuth(data.user);
         } catch (err) {
-            console.error('로그???�러:', err);
-            this.showError('login', '로그??처리 �??�류가 발생?�습?�다.');
+            console.error('로그인 에러:', err);
+            this.showError('login', '로그인 처리 중 오류가 발생했습니다.');
         } finally {
             btn.disabled = false;
-            btn.querySelector('span').textContent = '로그??;
+            btn.querySelector('span').textContent = '로그인';
         }
     }
 
-    // ?�원가??처리
+    // 회원가입 처리
     async handleSignup() {
         const nicknameEl = document.getElementById('signup-nickname');
         const emailEl    = document.getElementById('signup-email');
@@ -451,20 +456,21 @@ class AuthManager {
 
         this.hideError('signup');
 
-        if (!nickname) { alert('?�네?�을 ?�력??주세??'); this.showError('signup', '?�네?�을 ?�력??주세??'); return; }
-        if (!email) { alert('?�메?�을 ?�력??주세??'); this.showError('signup', '?�메?�을 ?�력??주세??'); return; }
-        if (password.length < 6) { alert('비�?번호??6?�리 ?�상?�어???�니??'); this.showError('signup', '비�?번호??6?�리 ?�상?�어???�니??'); return; }
+        if (!nickname) { alert('닉네임을 입력해 주세요.'); this.showError('signup', '닉네임을 입력해 주세요.'); return; }
+        if (!email) { alert('이메일을 입력해 주세요.'); this.showError('signup', '이메일을 입력해 주세요.'); return; }
+        if (password.length < 6) { alert('비밀번호는 6자리 이상이어야 합니다.'); this.showError('signup', '비밀번호는 6자리 이상이어야 합니다.'); return; }
 
         btn.disabled = true;
         const btnSpan = btn.querySelector('span');
-        if (btnSpan) btnSpan.textContent = '가??�?..';
+        if (btnSpan) btnSpan.textContent = '가입 중...';
 
         try {
-            // Supabase Auth�??�원가??            const { data: signUpData, error: signUpError } = await sbClient.auth.signUp({ email, password });
+            // Supabase Auth로 회원가입
+            const { data: signUpData, error: signUpError } = await sbClient.auth.signUp({ email, password });
 
             if (signUpError) {
-                alert('?�원가???�패: ' + (signUpError.message || '?�류가 발생?�습?�다.'));
-                this.showError('signup', signUpError.message || '?��? ?�용 중인 ?�메?�이거나 ?�류가 발생?�습?�다.');
+                alert('회원가입 실패: ' + (signUpError.message || '오류가 발생했습니다.'));
+                this.showError('signup', signUpError.message || '이미 사용 중인 이메일이거나 오류가 발생했습니다.');
                 return;
             }
 
@@ -472,8 +478,8 @@ class AuthManager {
             if (!signUpData || !signUpData.session) {
                 const { data: signInData, error: signInError } = await sbClient.auth.signInWithPassword({ email, password });
                 if (signInError || !signInData || !signInData.user) {
-                    alert('가?��? ?�료?�었?�니?? 로그????��??로그?�해 주세??');
-                    this.showError('signup', '가???�료! 로그????��??로그?�해 주세??');
+                    alert('가입은 완료되었습니다! 로그인 탭에서 로그인해 주세요.');
+                    this.showError('signup', '가입 완료! 로그인 탭에서 로그인해 주세요.');
                     switchTab('login');
                     return;
                 }
@@ -481,7 +487,8 @@ class AuthManager {
             }
 
             if (finalUser) {
-                // DB??초기 ?�레?�어 ?�정 ?�??                await sbClient.from('player_settings').upsert({
+                // DB에 초기 플레이어 설정 저장
+                await sbClient.from('player_settings').upsert({
                     id: finalUser.id,
                     nickname: nickname,
                     stage: 1,
@@ -491,48 +498,50 @@ class AuthManager {
                     sfx_volume: 80
                 });
 
-                alert('?�원가???�공! 게임???�작?�니??');
-                // 가??+ 로그???�공 ????게임 ?�작
+                alert('회원가입 성공! 게임을 시작합니다.');
+                // 가입 + 로그인 성공 → 새 게임 시작
                 await startGameAfterAuth(finalUser, true);
             }
         } catch (err) {
-            console.error('?�원가???�러:', err);
-            alert('?�원가??처리 �??�류 발생: ' + err.message);
-            this.showError('signup', '?�원가??처리 �??�류가 발생?�습?�다.');
+            console.error('회원가입 에러:', err);
+            alert('회원가입 처리 중 오류 발생: ' + err.message);
+            this.showError('signup', '회원가입 처리 중 오류가 발생했습니다.');
         } finally {
             btn.disabled = false;
-            if (btnSpan) btnSpan.textContent = '?�원가??;
+            if (btnSpan) btnSpan.textContent = '회원가입';
         }
     }
 
-    // ?�류 메시지 ?�시
+    // 오류 메시지 표시
     showError(type, msg) {
         const el = type === 'login' ? this.loginError : this.signupError;
         el.textContent = msg;
         el.classList.remove('hidden');
     }
 
-    // ?�류 메시지 ?�기�?    hideError(type) {
+    // 오류 메시지 숨기기
+    hideError(type) {
         const el = type === 'login' ? this.loginError : this.signupError;
         el.classList.add('hidden');
     }
 
-    // 로그???�면 ?�기�?    hideAuthScreen() {
+    // 로그인 화면 숨기기
+    hideAuthScreen() {
         this.authScreen.classList.add('hidden');
     }
 }
 
 // ============================================================
-// 6. PlayerDataManager - Supabase?�서 ?�레?�어 ?�정 ?�??불러?�기
+// 6. PlayerDataManager - Supabase에서 플레이어 설정 저장/불러오기
 // ============================================================
 class PlayerDataManager {
     constructor(userId) {
-        this.userId = userId; // ?�재 로그?�한 ?�용??고유 ID
+        this.userId = userId; // 현재 로그인한 사용자 고유 ID
     }
 
-    // Supabase?�서 ???�정 불러?�기
+    // Supabase에서 내 설정 불러오기
     async load() {
-        const { data, error } = await supabase
+        const { data, error } = await sbClient
             .from('player_settings')
             .select('*')
             .eq('id', this.userId)
@@ -542,16 +551,16 @@ class PlayerDataManager {
         return data;
     }
 
-    // Supabase???�재 ?�정 ?�??(?�테?��?, 배경, BGM, 볼륨)
+    // Supabase에 현재 설정 저장 (스테이지, 배경, BGM, 볼륨)
     async save(settings) {
-        await supabase
+        await sbClient
             .from('player_settings')
             .update({ ...settings, updated_at: new Date().toISOString() })
             .eq('id', this.userId);
     }
 }
 
-// ???�환 ?�역 ?�수 (HTML onclick?�서 ?�출)
+// 탭 전환 전역 함수 (HTML onclick에서 호출)
 function switchTab(tab) {
     const loginForm  = document.getElementById('login-form');
     const signupForm = document.getElementById('signup-form');
@@ -571,7 +580,8 @@ function switchTab(tab) {
     }
 }
 
-// HTML onclick ?�역 ?�들??async function handleLoginAction() {
+// HTML onclick 전역 핸들러
+async function handleLoginAction() {
     if (!window._authManager) {
         window._authManager = new AuthManager();
     }
@@ -585,7 +595,8 @@ async function handleSignupAction() {
     await window._authManager.handleSignup();
 }
 
-// 로그???�공 ???�어???�로 ?�작 ?�택 �?게임 초기??async function startGameAfterAuth(user, isNewUser = false) {
+// 로그인 성공 후 이어서/새로 시작 선택 및 게임 초기화
+async function startGameAfterAuth(user, isNewUser = false) {
     const authManager = window._authManager;
     authManager.hideAuthScreen();
 
@@ -593,40 +604,42 @@ async function handleSignupAction() {
     const settings   = await playerData.load();
 
     if (isNewUser || !settings || settings.stage <= 1) {
-        // ???��? ?�는 ?�테?��? 1?�면 바로 ?�작
+        // 새 유저 또는 스테이지 1이면 바로 시작
         window.gameApp = new WaterSortGame(user, playerData, settings, false);
         document.getElementById('app').classList.remove('hidden');
         return;
     }
 
-    // ?�?�된 ?�테?��?가 2 ?�상?�면 ?�택 모달 ?�시
+    // 저장된 스테이지가 2 이상이면 선택 모달 표시
     const continueModal = document.getElementById('continue-modal');
     document.getElementById('continue-welcome').textContent =
-        `${settings.nickname}?? 반갑?�니??`;
+        `${settings.nickname}님, 반갑습니다!`;
     document.getElementById('continue-info').textContent =
-        `마�?막으�?진행???�테?��?: ${settings.stage}?�계`;
+        `마지막으로 진행한 스테이지: ${settings.stage}단계`;
     continueModal.classList.remove('hidden');
     document.getElementById('app').classList.remove('hidden');
 
-    // ?�어??진행 버튼
+    // 이어서 진행 버튼
     document.getElementById('btn-continue').onclick = () => {
         continueModal.classList.add('hidden');
-        window.gameApp = new WaterSortGame(user, playerData, settings, true); // ?�어??    };
+        window.gameApp = new WaterSortGame(user, playerData, settings, true); // 이어서
+    };
 
-    // 처음부???�작 버튼
+    // 처음부터 시작 버튼
     document.getElementById('btn-new-game').onclick = () => {
         continueModal.classList.add('hidden');
-        window.gameApp = new WaterSortGame(user, playerData, settings, false); // 처음부??    };
+        window.gameApp = new WaterSortGame(user, playerData, settings, false); // 처음부터
+    };
 }
 
 
-// 3. 메인 게임 ?�래??(WaterSortGame)
+// 3. 메인 게임 클래스 (WaterSortGame)
 class WaterSortGame {
-    // user: 로그???�보, playerData: DB ?�??매니?�,
-    // settings: ?�?�된 ?�정�? isContinue: ?�어??진행 ?��?
+    // user: 로그인 정보, playerData: DB 저장 매니저,
+    // settings: 저장된 설정값, isContinue: 이어서 진행 여부
     constructor(user, playerData, settings, isContinue) {
         this.user        = user;
-        this.playerData  = playerData; // PlayerDataManager ?�스?�스
+        this.playerData  = playerData; // PlayerDataManager 인스턴스
         this.stage       = (isContinue && settings) ? (settings.stage || 1) : 1;
         this.bottles     = [];
         this.selectedBottleIdx = null;
@@ -635,7 +648,7 @@ class WaterSortGame {
         this.isAnimating = false;
         this.currentBgTheme = (settings && settings.bg_theme) ? settings.bg_theme : 'deep-space';
 
-        // DOM ?�소
+        // DOM 요소
         this.bottlesContainer = document.getElementById('bottles-container');
         this.stageNumEl       = document.getElementById('stage-number');
         this.winModal         = document.getElementById('win-modal');
@@ -650,7 +663,7 @@ class WaterSortGame {
         this.bgmValText      = document.getElementById('bgm-val-text');
         this.sfxValText      = document.getElementById('sfx-val-text');
 
-        // ?�?�된 ?�정??UI??즉시 반영
+        // 저장된 설정을 UI에 즉시 반영
         this.applyBgTheme(this.currentBgTheme);
         if (settings) this.applySettings(settings);
 
@@ -658,27 +671,31 @@ class WaterSortGame {
         this.startStage(this.stage);
     }
 
-    // Supabase?�서 불러???�정값을 UI ?�라?�더/?�롭?�운??반영
+    // Supabase에서 불러온 설정값을 UI 슬라이더/드롭다운에 반영
     applySettings(settings) {
-        // BGM ?�랙 UI ?�기??        if (this.bgmSelect && settings.bgm_track) {
+        // BGM 트랙 UI 동기화
+        if (this.bgmSelect && settings.bgm_track) {
             this.bgmSelect.value = settings.bgm_track;
         }
-        // BGM 볼륨 UI ?�기??        if (settings.bgm_volume !== undefined) {
+        // BGM 볼륨 UI 동기화
+        if (settings.bgm_volume !== undefined) {
             this.bgmVolumeSlider.value = settings.bgm_volume;
             this.bgmValText.textContent = `${settings.bgm_volume}%`;
             soundEngine.setBgmVolume(settings.bgm_volume / 100);
         }
-        // SFX 볼륨 UI ?�기??        if (settings.sfx_volume !== undefined) {
+        // SFX 볼륨 UI 동기화
+        if (settings.sfx_volume !== undefined) {
             this.sfxVolumeSlider.value = settings.sfx_volume;
             this.sfxValText.textContent = `${settings.sfx_volume}%`;
             soundEngine.setSfxVolume(settings.sfx_volume / 100);
         }
-        // ?�?�된 BGM ?�생 (?�레?????�작)
+        // 저장된 BGM 재생 (딜레이 후 시작)
         const track = settings.bgm_track || 'lofi';
         setTimeout(() => soundEngine.changeBgm(track), 500);
     }
 
-    // ?�재 ?�정??Supabase DB???�??    async saveProgress() {
+    // 현재 설정을 Supabase DB에 저장
+    async saveProgress() {
         if (!this.playerData) return;
         await this.playerData.save({
             stage:      this.stage,
@@ -689,7 +706,7 @@ class WaterSortGame {
         });
     }
 
-    // 배경 ?�마�?#app??data-theme ?�성?�로 ?�용
+    // 배경 테마를 #app에 data-theme 속성으로 적용
     applyBgTheme(theme) {
         this.currentBgTheme = theme;
         this.appEl.setAttribute('data-theme', theme);
@@ -697,7 +714,7 @@ class WaterSortGame {
     }
 
     initEvents() {
-        // ?�느 ?�치??�??�치 ??AudioContext resume ?�출 (?�리 ?�류 100% 방�?)
+        // 어느 위치든 첫 터치 시 AudioContext resume 호출 (소리 오류 100% 방지)
         const unlockAudio = () => {
             soundEngine.init();
             window.removeEventListener('click', unlockAudio);
@@ -706,39 +723,42 @@ class WaterSortGame {
         window.addEventListener('click', unlockAudio);
         window.addEventListener('touchstart', unlockAudio);
 
-        // ?�운???�정 모달 ?�기/?�기
+        // 사운드 설정 모달 열기/닫기
         document.getElementById('btn-sound-settings').addEventListener('click', () => {
             soundEngine.init();
             this.soundModal.classList.remove('hidden');
         });
         document.getElementById('btn-close-sound').addEventListener('click', () => {
             this.soundModal.classList.add('hidden');
-            this.saveProgress(); // 모달 ?�을 ???�정 ?�동 ?�??        });
+            this.saveProgress(); // 모달 닫을 때 설정 자동 저장
+        });
 
-        // 배경 ?�마 변�??�벤??        this.bgThemeSelect.addEventListener('change', (e) => {
+        // 배경 테마 변경 이벤트
+        this.bgThemeSelect.addEventListener('change', (e) => {
             this.applyBgTheme(e.target.value);
             soundEngine.playPop();
         });
 
-        // BGM ?�랙 변�??�벤??        this.bgmSelect.addEventListener('change', (e) => {
+        // BGM 트랙 변경 이벤트
+        this.bgmSelect.addEventListener('change', (e) => {
             soundEngine.changeBgm(e.target.value);
         });
 
-        // BGM 볼륨 ?�라?�더
+        // BGM 볼륨 슬라이더
         this.bgmVolumeSlider.addEventListener('input', (e) => {
             const val = parseInt(e.target.value, 10);
             this.bgmValText.textContent = `${val}%`;
             soundEngine.setBgmVolume(val / 100);
         });
 
-        // SFX ?�과??볼륨 ?�라?�더
+        // SFX 효과음 볼륨 슬라이더
         this.sfxVolumeSlider.addEventListener('input', (e) => {
             const val = parseInt(e.target.value, 10);
             this.sfxValText.textContent = `${val}%`;
             soundEngine.setSfxVolume(val / 100);
         });
 
-        // ?��?�?모달
+        // 도움말 모달
         document.getElementById('btn-info') && document.getElementById('btn-info').addEventListener('click', () => {
             this.infoModal.classList.remove('hidden');
         });
@@ -746,24 +766,26 @@ class WaterSortGame {
             this.infoModal.classList.add('hidden');
         });
 
-        // 로그?�웃 버튼
+        // 로그아웃 버튼
         document.getElementById('btn-logout').addEventListener('click', async () => {
             soundEngine.stopBgm();
             await sbClient.auth.signOut();
-            // ?�이지 ?�로고침?�로 로그???�면?�로 ?�아가�?            window.location.reload();
+            // 페이지 새로고침으로 로그인 화면으로 돌아가기
+            window.location.reload();
         });
 
-        // ?�돌리기, ?�시?? ?�음 ?�계
+        // 되돌리기, 재시작, 다음 단계
         document.getElementById('btn-undo').addEventListener('click', () => this.undoMove());
         document.getElementById('btn-reset').addEventListener('click', () => this.resetStage());
 
         document.getElementById('btn-next-stage').addEventListener('click', () => {
             this.winModal.classList.add('hidden');
             this.stage++;
-            this.saveProgress(); // ?�음 ?�테?��? Supabase???�??            this.startStage(this.stage);
+            this.saveProgress(); // 다음 스테이지 Supabase에 저장
+            this.startStage(this.stage);
         });
 
-        // ?�� 배경 바깥 ?�역 ?�치/?�릭 ??�??�택 취소 (Deselect)
+        // 🌟 배경 바깥 영역 터치/클릭 시 병 선택 취소 (Deselect)
         this.bottlesContainer.parentElement.addEventListener('click', (e) => {
             if (!e.target.closest('.bottle-wrapper') && this.selectedBottleIdx !== null && !this.isAnimating) {
                 soundEngine.playPop();
@@ -773,16 +795,16 @@ class WaterSortGame {
         });
     }
 
-    // ?�로???�테?��? ?�작 (?�상 ?�성 �?초기 ?�플)
+    // 새로운 스테이지 시작 (색상 생성 및 초기 셔플)
     startStage(stageNum) {
         this.stageNumEl.textContent = stageNum;
         this.selectedBottleIdx = null;
         this.history = [];
         this.isAnimating = false;
 
-        // ?�� ?�테?��? ?�이??공식: 1~2?�계 3??-> 최�? 17??(+ 기본 �?�?3�?= �?20�?�?
+        // 🌟 스테이지 난이도 공식: 1~2단계 3색 -> 최대 17색 (+ 기본 빈 병 3개 = 총 20개 병)
         const colorCount = Math.min(3 + Math.floor((stageNum - 1) / 2), 17);
-        const emptyBottleCount = 3; // ?�� 기본 ?�공 �?병을 3개로 ?�장?�여 ?�시???�에??쾌적??보장!
+        const emptyBottleCount = 3; // 🌟 기본 제공 빈 병을 3개로 확장하여 재시작 시에도 쾌적함 보장!
         const selectedColors = PALETTE.slice(0, colorCount);
 
         let colorPool = [];
@@ -807,18 +829,18 @@ class WaterSortGame {
             this.bottles.push([]);
         }
 
-        // ?�� ?�테?��? 최초 ?�태 보�? (?�시?????�래 배치 그�?�?복원?�기 ?�함)
+        // 🌟 스테이지 최초 상태 보관 (재시작 시 원래 배치 그대로 복원하기 위함)
         this.initialBottles = this.bottles.map(b => [...b]);
 
         this.render();
     }
 
-    // ?�� ?�재 ?�테?��? ?�시??(?�래 처음 ?�성?�었??배치 그�?�?복원)
+    // 🌟 현재 스테이지 재시작 (원래 처음 생성되었던 배치 그대로 복원)
     resetStage() {
         if (this.isAnimating) return;
         soundEngine.playPop();
         
-        // 처음 배치 ?�태 그�?�??�복
+        // 처음 배치 상태 그대로 원복
         this.bottles = this.initialBottles.map(b => [...b]);
         this.selectedBottleIdx = null;
         this.history = [];
@@ -860,11 +882,11 @@ class WaterSortGame {
         });
     }
 
-    // ?�리�??�치/?�릭 처리 (?�택 ?�제 �?부???�기)
+    // 유리병 터치/클릭 처리 (선택 해제 및 부어 담기)
     handleBottleClick(bIdx) {
         if (this.isAnimating) return;
 
-        // 1. ?��? ?�택??병을 ?�시 ?�르�?-> ?�택 즉시 취소!
+        // 1. 이미 선택된 병을 다시 누르면 -> 선택 즉시 취소!
         if (this.selectedBottleIdx === bIdx) {
             soundEngine.playPop();
             this.selectedBottleIdx = null;
@@ -872,7 +894,7 @@ class WaterSortGame {
             return;
         }
 
-        // 2. ?�택??병이 ?�을 ??-> ?�로??�??�택
+        // 2. 선택된 병이 없을 때 -> 새로운 병 선택
         if (this.selectedBottleIdx === null) {
             if (this.bottles[bIdx].length === 0) return;
             soundEngine.playPop();
@@ -881,7 +903,7 @@ class WaterSortGame {
             return;
         }
 
-        // 3. �???���??�도
+        // 3. 물 옮기기 시도
         const fromIdx = this.selectedBottleIdx;
         const toIdx = bIdx;
 
@@ -904,13 +926,15 @@ class WaterSortGame {
         const toBottle = this.bottles[toIdx];
 
         if (!fromBottle || !toBottle) return false;
-        if (fromBottle.length === 0) return false; // ??�� ?�체가 ?�음
-        if (toBottle.length >= BOTTLE_CAPACITY) return false; // 받는 병이 �?차있??
+        if (fromBottle.length === 0) return false; // 옮길 액체가 없음
+        if (toBottle.length >= BOTTLE_CAPACITY) return false; // 받는 병이 꽉 차있음
+
         const topColorFrom = fromBottle[fromBottle.length - 1];
 
-        if (toBottle.length === 0) return true; // 받는 병이 비어?�으�??�제??가??        const topColorTo = toBottle[toBottle.length - 1];
+        if (toBottle.length === 0) return true; // 받는 병이 비어있으면 언제든 가능
+        const topColorTo = toBottle[toBottle.length - 1];
 
-        // ?�� ?�?�문??구문 �?공백 차이 ?�류 방�?�??�해 toUpperCase()�??�림 비교
+        // 🌟 대소문자 구문 및 공백 차이 오류 방지를 위해 toUpperCase()로 트림 비교
         return topColorFrom.trim().toUpperCase() === topColorTo.trim().toUpperCase();
     }
 
@@ -925,7 +949,7 @@ class WaterSortGame {
 
             const pourColor = fromBottle[fromBottle.length - 1];
 
-            // ?�동???�일???�상???�체 �?개수 계산
+            // 이동할 동일한 색상의 액체 층 개수 계산
             let pourCount = 0;
             for (let i = fromBottle.length - 1; i >= 0; i--) {
                 if (fromBottle[i].trim().toUpperCase() === pourColor.trim().toUpperCase()) {
@@ -940,10 +964,10 @@ class WaterSortGame {
 
             if (actualPourCount <= 0) return;
 
-            // �??�리 ?�생
+            // 물 소리 재생
             soundEngine.playPourSound(actualPourCount * 300);
 
-            // ?�제 �??�이???�동
+            // 실제 물 데이터 이동
             for (let i = 0; i < actualPourCount; i++) {
                 fromBottle.pop();
                 toBottle.push(pourColor);
@@ -956,7 +980,7 @@ class WaterSortGame {
         } catch (error) {
             console.error("Pouring error:", error);
         } finally {
-            // ?�� 무슨 ?�이 ?�어??isAnimating???�제?�여 �??�치가 막히???�상 방�?
+            // 🌟 무슨 일이 있어도 isAnimating을 해제하여 병 터치가 막히는 현상 방지
             this.isAnimating = false;
         }
 
@@ -1011,20 +1035,18 @@ class WaterSortGame {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-    // AuthManager 초기??(로그???�원가??버튼 ?�벤???�결)
+    // AuthManager 초기화 (로그인/회원가입 버튼 이벤트 연결)
     window._authManager = new AuthManager();
 
-    // ?��? 로그?�된 ?�션???�으�?로그???�면 ?�이 바로 게임?�로 ?�동
+    // 이미 로그인된 세션이 있으면 로그인 화면 없이 바로 게임으로 이동
     if (supabase) {
         try {
-            const { data: { session } } = await sbClient.auth.getSession();
+            const { data: { session } } = await supabase.auth.getSession();
             if (session && session.user) {
                 await startGameAfterAuth(session.user);
             }
         } catch (e) {
-            console.error('?�션 ?�인 ?�류:', e);
+            console.error('세션 확인 오류:', e);
         }
     }
 });
-
-
