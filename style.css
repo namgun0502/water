@@ -427,12 +427,19 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 22px;
+    margin-bottom: 8px;
 }
 
 .modal-header h3 {
     font-size: 1.25rem;
     font-weight: 700;
+}
+
+.setting-subtitle {
+    font-size: 0.85rem;
+    color: var(--accent-glow);
+    margin-bottom: 20px;
+    line-height: 1.4;
 }
 
 .close-btn {
