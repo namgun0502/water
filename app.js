@@ -371,12 +371,10 @@ const soundEngine = new SoundManager();
 
 // ============================================================
 // 4. Supabase 클라이언트 초기화
-// ⚠️ 주의: window.supabase SDK가 완전히 로드된 후 초기화해야 합니다.
-// 그래서 변수 선언만 여기서 하고, 실제 초기화는 DOMContentLoaded 안에서 합니다.
 // ============================================================
 const SUPABASE_URL  = 'https://qzhgsshyhmnczmreagqd.supabase.co';
 const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6aGdzc2h5aG1uY3ptcmVhZ3FkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyNzc0NzksImV4cCI6MjA5Nzg1MzQ3OX0.2NZxyClmIpj7WtUuZtexZqAMuTnC7udF5FejwitzvcU';
-let supabase; // ← 선언만 해두고, DOMContentLoaded 안에서 초기화합니다.
+const supabase = (window.supabase && window.supabase.createClient) ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
 
 // ============================================================
 // 5. AuthManager - 로그인 / 회원가입 / 로그아웃 담당
@@ -1035,20 +1033,18 @@ class WaterSortGame {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-    // 🌟 Supabase SDK가 완전히 로드된 이후 이 시점에서 초기화합니다.
-    // 이렇게 해야 'window.supabase is not defined' 오류가 발생하지 않습니다.
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
-
     // AuthManager 초기화 (로그인/회원가입 버튼 이벤트 연결)
     window._authManager = new AuthManager();
 
     // 이미 로그인된 세션이 있으면 로그인 화면 없이 바로 게임으로 이동
-    try {
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session && session.user) {
-            await startGameAfterAuth(session.user);
+    if (supabase) {
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session && session.user) {
+                await startGameAfterAuth(session.user);
+            }
+        } catch (e) {
+            console.error('세션 확인 오류:', e);
         }
-    } catch (e) {
-        console.error('세션 확인 오류:', e);
     }
 });

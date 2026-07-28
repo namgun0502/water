@@ -11,6 +11,8 @@
     <!-- FontAwesome 아이콘 레퍼런스 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <!-- Supabase JS SDK (CDN - 상단 로드) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -33,12 +35,12 @@
 
             <!-- 탭 전환 버튼 (로그인 / 회원가입) -->
             <div class="auth-tabs">
-                <button id="tab-login" class="auth-tab active" onclick="switchTab('login')">로그인</button>
-                <button id="tab-signup" class="auth-tab" onclick="switchTab('signup')">회원가입</button>
+                <button type="button" id="tab-login" class="auth-tab active" onclick="switchTab('login')">로그인</button>
+                <button type="button" id="tab-signup" class="auth-tab" onclick="switchTab('signup')">회원가입</button>
             </div>
 
             <!-- 로그인 폼 -->
-            <form id="login-form" class="auth-form" onsubmit="return false;">
+            <form id="login-form" class="auth-form" onsubmit="handleLoginAction(); return false;">
                 <div class="auth-input-group">
                     <i class="fa-solid fa-envelope"></i>
                     <input type="email" id="login-email" class="auth-input" placeholder="이메일 주소" autocomplete="email">
@@ -55,7 +57,7 @@
             </form>
 
             <!-- 회원가입 폼 (기본적으로 숨김) -->
-            <form id="signup-form" class="auth-form hidden" onsubmit="return false;">
+            <form id="signup-form" class="auth-form hidden" onsubmit="handleSignupAction(); return false;">
                 <div class="auth-input-group">
                     <i class="fa-solid fa-user"></i>
                     <input type="text" id="signup-nickname" class="auth-input" placeholder="닉네임 (표시 이름)" maxlength="10">
@@ -270,8 +272,6 @@
 
     <!-- 캔버스 폭죽 효과 라이브러리 (Confetti) -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- Supabase JS SDK (CDN) -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
 </body>
 </html>
