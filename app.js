@@ -4,7 +4,7 @@
  * ==========================================================================
  */
 
-// 1. 액체 색상 파렛트 정의 (시각적 구별이 뚜렷한 14가지 고대비 파스텔/네온 힐링 파렛트)
+// 1. 액체 색상 파렛트 정의 (시각적 구별이 뚜렷한 20가지 고대비 파스텔/네온 힐링 파렛트)
 const PALETTE = [
     '#FF2A55', // 1: Cherry Red (체리 레드)
     '#FF8C00', // 2: Mango Orange (망고 주황)
@@ -19,7 +19,13 @@ const PALETTE = [
     '#795548', // 11: Deep Chocolate Brown (초콜릿 브라운)
     '#FF7043', // 12: Coral Tangerine (코랄 탠저린)
     '#004D40', // 13: Deep Teal (짙은 청록)
-    '#4A148C'  // 14: Plum Purple (플럼 퍼플)
+    '#4A148C', // 14: Plum Purple (플럼 퍼플)
+    '#D500F9', // 15: Magenta Rose (마젠타 로즈 - 신규)
+    '#827717', // 16: Sage Olive (세이지 올리브 - 신규)
+    '#BF360C', // 17: Deep Caramel (카라멜 브라운 - 신규)
+    '#1A237E', // 18: Midnight Navy (미드나잇 네이비 - 신규)
+    '#FFD600', // 19: Deep Bronze Gold (브론즈 골드 - 신규)
+    '#A7FFEB'  // 20: Cotton Mint (솜사탕 민트 - 신규)
 ];
 
 const BOTTLE_CAPACITY = 4;
@@ -482,8 +488,8 @@ class WaterSortGame {
         this.history = [];
         this.isAnimating = false;
 
-        // 🌟 스테이지 난이도 공식: 1~2단계 3색 -> 최대 11색 (+ 기본 빈 병 3개 = 총 14개 병)
-        const colorCount = Math.min(3 + Math.floor((stageNum - 1) / 2), 11);
+        // 🌟 스테이지 난이도 공식: 1~2단계 3색 -> 최대 17색 (+ 기본 빈 병 3개 = 총 20개 병)
+        const colorCount = Math.min(3 + Math.floor((stageNum - 1) / 2), 17);
         const emptyBottleCount = 3; // 🌟 기본 제공 빈 병을 3개로 확장하여 재시작 시에도 쾌적함 보장!
         const selectedColors = PALETTE.slice(0, colorCount);
 
