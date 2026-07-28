@@ -4,18 +4,22 @@
  * ==========================================================================
  */
 
-// 1. 액체 색상 파렛트 정의 (시각적 구별이 뚜렷한 고대비 파스텔/네온 힐링 파렛트)
+// 1. 액체 색상 파렛트 정의 (시각적 구별이 뚜렷한 14가지 고대비 파스텔/네온 힐링 파렛트)
 const PALETTE = [
-    '#FF2A55', // 1: Vibrant Cherry Red (체리 레드)
-    '#FF8C00', // 2: Vivid Mango Orange (망고 주황)
-    '#FFE600', // 3: Bright Lemon Yellow (레몬 노랑)
-    '#00E676', // 4: Neon Lime Green (라임 연두)
-    '#006400', // 5: Deep Forest Green (진한 초록)
-    '#00E5FF', // 6: Electric Cyan Sky (맑은 하늘색)
-    '#1565C0', // 7: Deep Cobalt Blue (진한 코발트 파랑)
-    '#AA00FF', // 8: Electric Royal Violet (선명한 보라)
-    '#FF4081', // 9: Bright Berry Pink (밝은 분홍)
-    '#E0E0E0'  // 10: Pearl White Silver (밝은 은백색)
+    '#FF2A55', // 1: Cherry Red (체리 레드)
+    '#FF8C00', // 2: Mango Orange (망고 주황)
+    '#FFE600', // 3: Lemon Yellow (레몬 노랑)
+    '#00E676', // 4: Lime Green (라임 연두)
+    '#006400', // 5: Forest Green (진한 초록)
+    '#00E5FF', // 6: Cyan Sky (밝은 하늘색)
+    '#1565C0', // 7: Cobalt Blue (진한 코발트 파랑)
+    '#AA00FF', // 8: Royal Violet (선명한 보라)
+    '#FF4081', // 9: Berry Pink (밝은 분홍)
+    '#E0E0E0', // 10: Pearl Silver (밝은 은백색)
+    '#795548', // 11: Deep Chocolate Brown (초콜릿 브라운)
+    '#FF7043', // 12: Coral Tangerine (코랄 탠저린)
+    '#004D40', // 13: Deep Teal (짙은 청록)
+    '#4A148C'  // 14: Plum Purple (플럼 퍼플)
 ];
 
 const BOTTLE_CAPACITY = 4;
@@ -470,7 +474,8 @@ class WaterSortGame {
         this.history = [];
         this.isAnimating = false;
 
-        const colorCount = Math.min(3 + Math.floor((stageNum - 1) / 2), 8);
+        // 🌟 스테이지 난이도 공식: 1~2단계 3색 -> 최대 12색 (총 14개 병) 확장
+        const colorCount = Math.min(3 + Math.floor((stageNum - 1) / 2), 12);
         const emptyBottleCount = 2;
         const selectedColors = PALETTE.slice(0, colorCount);
 
@@ -516,6 +521,15 @@ class WaterSortGame {
 
     render() {
         this.bottlesContainer.innerHTML = '';
+
+        // 🌟 병 개수가 9개 이상으로 많아지면 compact 레이아웃 클래스 부여
+        if (this.bottles.length >= 11) {
+            this.bottlesContainer.className = 'bottles-container compact-mini';
+        } else if (this.bottles.length >= 9) {
+            this.bottlesContainer.className = 'bottles-container compact';
+        } else {
+            this.bottlesContainer.className = 'bottles-container';
+        }
 
         this.bottles.forEach((bottle, bIdx) => {
             const wrapper = document.createElement('div');
