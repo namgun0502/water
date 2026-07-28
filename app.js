@@ -607,6 +607,27 @@ async function handleSignupAction() {
     await window._authManager.handleSignup();
 }
 
+// 비밀번호 보이기/숨기기 토글 전역 함수
+function togglePasswordVisibility(inputId, btnEl) {
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    const icon = btnEl.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        if (icon) {
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        }
+    } else {
+        input.type = 'password';
+        if (icon) {
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+}
+
 // 로그인 성공 후 이어서/새로 시작 선택 및 게임 초기화
 async function startGameAfterAuth(user, isNewUser = false) {
     const authManager = window._authManager;

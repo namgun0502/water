@@ -48,6 +48,9 @@
                 <div class="auth-input-group">
                     <i class="fa-solid fa-lock"></i>
                     <input type="password" id="login-password" class="auth-input" placeholder="비밀번호" autocomplete="current-password">
+                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('login-password', this)" title="비밀번호 보기/숨기기">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
                 </div>
                 <p id="login-error" class="auth-error hidden"></p>
                 <button type="button" id="btn-login" class="auth-submit-btn" onclick="handleLoginAction()">
@@ -69,6 +72,9 @@
                 <div class="auth-input-group">
                     <i class="fa-solid fa-lock"></i>
                     <input type="password" id="signup-password" class="auth-input" placeholder="비밀번호 (6자리 이상)" autocomplete="new-password">
+                    <button type="button" class="password-toggle-btn" onclick="togglePasswordVisibility('signup-password', this)" title="비밀번호 보기/숨기기">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
                 </div>
                 <p id="signup-error" class="auth-error hidden"></p>
                 <button type="button" id="btn-signup" class="auth-submit-btn" onclick="handleSignupAction()">
