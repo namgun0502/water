@@ -23,8 +23,9 @@
         <!-- 상단 헤더 영역 -->
         <header class="game-header">
             <div class="header-left">
-                <button id="btn-sound" class="icon-btn" aria-label="음소거 토글">
-                    <i class="fa-solid fa-volume-high"></i>
+                <!-- 사운드 및 볼륨 설정 모달 열기 버튼 -->
+                <button id="btn-sound-settings" class="icon-btn" aria-label="사운드 설정">
+                    <i class="fa-solid fa-sliders"></i>
                 </button>
             </div>
             <div class="stage-info">
@@ -71,6 +72,49 @@
             </button>
         </footer>
 
+        <!-- 🔊 사운드 & BGM 설정 모달 -->
+        <div id="sound-modal" class="modal-backdrop hidden">
+            <div class="modal-card sound-card">
+                <div class="modal-header">
+                    <h3>🎧 사운드 & BGM 설정</h3>
+                    <button id="btn-close-sound" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <!-- BGM 트랙 선택 (총 6종 + OFF) -->
+                    <div class="setting-group">
+                        <label class="setting-label">🎵 BGM 배경음악 선택</label>
+                        <select id="bgm-select" class="custom-select">
+                            <option value="off">🔇 BGM 끄기 (Off)</option>
+                            <option value="lofi" selected>🎵 1. Chill Lofi (편안한 로파이)</option>
+                            <option value="ocean">🌊 2. Ocean ASMR (잔잔한 바다)</option>
+                            <option value="piano">🎹 3. Calm Piano (감성 클래식 피아노)</option>
+                            <option value="rain">🌲 4. Forest Rain (숲속 빗소리)</option>
+                            <option value="synth">✨ 5. Fantasy Synth (몽환 신디사이저)</option>
+                            <option value="jazz">☕ 6. Cozy Jazz (따뜻한 카페 재즈)</option>
+                        </select>
+                    </div>
+
+                    <!-- BGM 볼륨 슬라이더 -->
+                    <div class="setting-group">
+                        <div class="slider-header">
+                            <label class="setting-label"><i class="fa-solid fa-music"></i> BGM 볼륨</label>
+                            <span id="bgm-val-text" class="val-text">60%</span>
+                        </div>
+                        <input type="range" id="bgm-volume" class="custom-range" min="0" max="100" value="60">
+                    </div>
+
+                    <!-- 효과음(SFX) 볼륨 슬라이더 -->
+                    <div class="setting-group">
+                        <div class="slider-header">
+                            <label class="setting-label"><i class="fa-solid fa-volume-high"></i> 효과음 볼륨</label>
+                            <span id="sfx-val-text" class="val-text">80%</span>
+                        </div>
+                        <input type="range" id="sfx-volume" class="custom-range" min="0" max="100" value="80">
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- 스테이지 클리어 승리 축하 모달 -->
         <div id="win-modal" class="modal-backdrop hidden">
             <div class="modal-card win-card">
@@ -111,6 +155,10 @@
                     </div>
                     <div class="guide-item">
                         <span class="guide-num">4</span>
+                        <p>선택했던 병을 **다시 터치하면 선택이 취소**됩니다.</p>
+                    </div>
+                    <div class="guide-item">
+                        <span class="guide-num">5</span>
                         <p>모든 병이 한 가지 색상으로만 정리되면 성공입니다! 🌟</p>
                     </div>
                 </div>
