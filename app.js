@@ -447,33 +447,40 @@ class AuthManager {
 
     // 회원가입 처리
     async handleSignup() {
-        const nickname = document.getElementById('signup-nickname').value.trim();
-        const email    = document.getElementById('signup-email').value.trim();
-        const password = document.getElementById('signup-password').value;
-        const btn      = document.getElementById('btn-signup');
+        const nicknameEl = document.getElementById('signup-nickname');
+        const emailEl    = document.getElementById('signup-email');
+        const passwordEl = document.getElementById('signup-password');
+        const btn        = document.getElementById('btn-signup');
+
+        const nickname = nicknameEl ? nicknameEl.value.trim() : '';
+        const email    = emailEl ? emailEl.value.trim() : '';
+        const password = passwordEl ? passwordEl.value : '';
 
         this.hideError('signup');
 
-        if (!nickname) { this.showError('signup', '닉네임을 입력해 주세요.'); return; }
-        if (!email) { this.showError('signup', '이메일을 입력해 주세요.'); return; }
-        if (password.length < 6) { this.showError('signup', '비밀번호는 6자리 이상이어야 합니다.'); return; }
+        if (!nickname) { alert('닉네임을 입력해 주세요.'); this.showError('signup', '닉네임을 입력해 주세요.'); return; }
+        if (!email) { alert('이메일을 입력해 주세요.'); this.showError('signup', '이메일을 입력해 주세요.'); return; }
+        if (password.length < 6) { alert('비밀번호는 6자리 이상이어야 합니다.'); this.showError('signup', '비밀번호는 6자리 이상이어야 합니다.'); return; }
 
         btn.disabled = true;
-        btn.querySelector('span').textContent = '가입 중...';
+        const btnSpan = btn.querySelector('span');
+        if (btnSpan) btnSpan.textContent = '가입 중...';
 
         try {
             // Supabase Auth로 회원가입
             const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
 
             if (signUpError) {
+                alert('회원가입 실패: ' + (signUpError.message || '오류가 발생했습니다.'));
                 this.showError('signup', signUpError.message || '이미 사용 중인 이메일이거나 오류가 발생했습니다.');
                 return;
             }
 
-            let finalUser = signUpData.user;
-            if (!signUpData.session) {
+            let finalUser = signUpData ? signUpData.user : null;
+            if (!signUpData || !signUpData.session) {
                 const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-                if (signInError || !signInData.user) {
+                if (signInError || !signInData || !signInData.user) {
+                    alert('가입은 완료되었습니다! 로그인 탭에서 로그인해 주세요.');
                     this.showError('signup', '가입 완료! 로그인 탭에서 로그인해 주세요.');
                     switchTab('login');
                     return;
@@ -481,25 +488,29 @@ class AuthManager {
                 finalUser = signInData.user;
             }
 
-            // DB에 초기 플레이어 설정 저장
-            await supabase.from('player_settings').upsert({
-                id: finalUser.id,
-                nickname: nickname,
-                stage: 1,
-                bg_theme: 'deep-space',
-                bgm_track: 'lofi',
-                bgm_volume: 60,
-                sfx_volume: 80
-            });
+            if (finalUser) {
+                // DB에 초기 플레이어 설정 저장
+                await supabase.from('player_settings').upsert({
+                    id: finalUser.id,
+                    nickname: nickname,
+                    stage: 1,
+                    bg_theme: 'deep-space',
+                    bgm_track: 'lofi',
+                    bgm_volume: 60,
+                    sfx_volume: 80
+                });
 
-            // 가입 + 로그인 성공 → 새 게임 시작
-            await startGameAfterAuth(finalUser, true);
+                alert('회원가입 성공! 게임을 시작합니다.');
+                // 가입 + 로그인 성공 → 새 게임 시작
+                await startGameAfterAuth(finalUser, true);
+            }
         } catch (err) {
             console.error('회원가입 에러:', err);
+            alert('회원가입 처리 중 오류 발생: ' + err.message);
             this.showError('signup', '회원가입 처리 중 오류가 발생했습니다.');
         } finally {
             btn.disabled = false;
-            btn.querySelector('span').textContent = '회원가입';
+            if (btnSpan) btnSpan.textContent = '회원가입';
         }
     }
 
