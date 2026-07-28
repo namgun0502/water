@@ -38,38 +38,38 @@
             </div>
 
             <!-- 로그인 폼 -->
-            <form id="login-form" class="auth-form">
+            <form id="login-form" class="auth-form" onsubmit="return false;">
                 <div class="auth-input-group">
                     <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="login-email" class="auth-input" placeholder="이메일 주소" autocomplete="email" required>
+                    <input type="email" id="login-email" class="auth-input" placeholder="이메일 주소" autocomplete="email">
                 </div>
                 <div class="auth-input-group">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="login-password" class="auth-input" placeholder="비밀번호" autocomplete="current-password" required>
+                    <input type="password" id="login-password" class="auth-input" placeholder="비밀번호" autocomplete="current-password">
                 </div>
                 <p id="login-error" class="auth-error hidden"></p>
-                <button type="submit" id="btn-login" class="auth-submit-btn">
+                <button type="button" id="btn-login" class="auth-submit-btn" onclick="handleLoginAction()">
                     <span>로그인</span>
                     <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </form>
 
             <!-- 회원가입 폼 (기본적으로 숨김) -->
-            <form id="signup-form" class="auth-form hidden">
+            <form id="signup-form" class="auth-form hidden" onsubmit="return false;">
                 <div class="auth-input-group">
                     <i class="fa-solid fa-user"></i>
-                    <input type="text" id="signup-nickname" class="auth-input" placeholder="닉네임 (표시 이름)" maxlength="10" required>
+                    <input type="text" id="signup-nickname" class="auth-input" placeholder="닉네임 (표시 이름)" maxlength="10">
                 </div>
                 <div class="auth-input-group">
                     <i class="fa-solid fa-envelope"></i>
-                    <input type="email" id="signup-email" class="auth-input" placeholder="이메일 주소" autocomplete="email" required>
+                    <input type="email" id="signup-email" class="auth-input" placeholder="이메일 주소" autocomplete="email">
                 </div>
                 <div class="auth-input-group">
                     <i class="fa-solid fa-lock"></i>
-                    <input type="password" id="signup-password" class="auth-input" placeholder="비밀번호 (6자리 이상)" autocomplete="new-password" required>
+                    <input type="password" id="signup-password" class="auth-input" placeholder="비밀번호 (6자리 이상)" autocomplete="new-password">
                 </div>
                 <p id="signup-error" class="auth-error hidden"></p>
-                <button type="submit" id="btn-signup" class="auth-submit-btn">
+                <button type="button" id="btn-signup" class="auth-submit-btn" onclick="handleSignupAction()">
                     <span>회원가입</span>
                     <i class="fa-solid fa-user-plus"></i>
                 </button>

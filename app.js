@@ -571,6 +571,19 @@ function switchTab(tab) {
     }
 }
 
+// HTML onclick 전역 핸들러
+async function handleLoginAction() {
+    if (window._authManager) {
+        await window._authManager.handleLogin();
+    }
+}
+
+async function handleSignupAction() {
+    if (window._authManager) {
+        await window._authManager.handleSignup();
+    }
+}
+
 // 로그인 성공 후 이어서/새로 시작 선택 및 게임 초기화
 async function startGameAfterAuth(user, isNewUser = false) {
     const authManager = window._authManager;
