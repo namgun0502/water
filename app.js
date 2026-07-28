@@ -469,8 +469,12 @@ class AuthManager {
             const { data: signUpData, error: signUpError } = await sbClient.auth.signUp({ email, password });
 
             if (signUpError) {
-                alert('회원가입 실패: ' + (signUpError.message || '오류가 발생했습니다.'));
-                this.showError('signup', signUpError.message || '이미 사용 중인 이메일이거나 오류가 발생했습니다.');
+                let msg = signUpError.message;
+                if (signUpError.status === 422) {
+                    msg = '비밀번호는 최소 6자리 이상이어야 하며, 올바른 이메일 형식을 입력하셔야 합니다.';
+                }
+                alert('⚠️ 회원가입 안 됨: ' + msg);
+                this.showError('signup', msg);
                 return;
             }
 
@@ -1039,9 +1043,9 @@ window.addEventListener('DOMContentLoaded', async () => {
     window._authManager = new AuthManager();
 
     // 이미 로그인된 세션이 있으면 로그인 화면 없이 바로 게임으로 이동
-    if (supabase) {
+    if (window.sbClient && sbClient.auth) {
         try {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await sbClient.auth.getSession();
             if (session && session.user) {
                 await startGameAfterAuth(session.user);
             }
