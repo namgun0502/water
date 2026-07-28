@@ -162,10 +162,10 @@ class SoundManager {
         this.init();
 
         if (track === 'lofi') this.startLofiBgm();
-        else if (track === 'ocean') this.startOceanBgm();
-        else if (track === 'piano') this.startPianoBgm();
-        else if (track === 'rain') this.startRainBgm();
-        else if (track === 'synth') this.startSynthBgm();
+        else if (track === 'moon') this.startMoonlightBgm();
+        else if (track === 'breeze') this.startBreezeBgm();
+        else if (track === 'star') this.startStarlightBgm();
+        else if (track === 'cloud') this.startCloudBgm();
         else if (track === 'jazz') this.startJazzBgm();
     }
 
@@ -180,7 +180,7 @@ class SoundManager {
         this.bgmNodes = [];
     }
 
-    // 1. Chill Lofi BGM (로파이 아날로그 앰비언트 코드)
+    // 1. Chill Lofi BGM (유지: 편안한 로파이)
     startLofiBgm() {
         const chords = [
             [261.63, 329.63, 392.00, 493.88], // Cmaj7
@@ -214,132 +214,119 @@ class SoundManager {
         this.bgmInterval = setInterval(playStep, 2000);
     }
 
-    // 2. Ocean ASMR BGM (바다 파도 물소리)
-    startOceanBgm() {
-        const playWave = () => {
-            const bufferSize = this.ctx.sampleRate * 4;
-            const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-
-            const noise = this.ctx.createBufferSource();
-            noise.buffer = buffer;
-
-            const filter = this.ctx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(200, this.ctx.currentTime);
-            filter.frequency.linearRampToValueAtTime(600, this.ctx.currentTime + 2);
-            filter.frequency.linearRampToValueAtTime(200, this.ctx.currentTime + 4);
-
-            const gain = this.ctx.createGain();
-            gain.gain.setValueAtTime(0.01, this.ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.12, this.ctx.currentTime + 2);
-            gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 4);
-
-            noise.connect(filter);
-            filter.connect(gain);
-            gain.connect(this.bgmGain);
-
-            noise.start();
-            this.bgmNodes.push(noise);
-        };
-
-        playWave();
-        this.bgmInterval = setInterval(playWave, 4000);
-    }
-
-    // 3. Calm Piano BGM (감성 클래식 피아노 아르페지오)
-    startPianoBgm() {
-        const notes = [261.63, 329.63, 392.00, 523.25, 493.88, 392.00, 329.63, 261.63];
+    // 2. Soft Moonlight BGM (신규: 부드러운 달빛 - 맑고 부드러운 아르페지오)
+    startMoonlightBgm() {
+        const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 523.25, 392.00, 329.63];
         let step = 0;
 
         const playNote = () => {
             const freq = notes[step % notes.length];
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
-            osc.type = 'triangle';
+            osc.type = 'sine'; // 아주 부드러운 사인파
             osc.frequency.value = freq;
 
-            gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.8);
+            gain.gain.setValueAtTime(0.05, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.2);
 
             osc.connect(gain);
             gain.connect(this.bgmGain);
             osc.start();
-            osc.stop(this.ctx.currentTime + 0.8);
+            osc.stop(this.ctx.currentTime + 1.2);
             this.bgmNodes.push(osc);
             step++;
         };
 
         playNote();
-        this.bgmInterval = setInterval(playNote, 600);
+        this.bgmInterval = setInterval(playNote, 700);
     }
 
-    // 4. Forest Rain BGM (숲속 아늑한 빗소리)
-    startRainBgm() {
-        const playRainDrop = () => {
-            const bufferSize = this.ctx.sampleRate * 0.5;
-            const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-
-            const noise = this.ctx.createBufferSource();
-            noise.buffer = buffer;
-
-            const filter = this.ctx.createBiquadFilter();
-            filter.type = 'highpass';
-            filter.frequency.value = 1000;
-
-            const gain = this.ctx.createGain();
-            gain.gain.setValueAtTime(0.03, this.ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.5);
-
-            noise.connect(filter);
-            filter.connect(gain);
-            gain.connect(this.bgmGain);
-
-            noise.start();
-            this.bgmNodes.push(noise);
-        };
-
-        playRainDrop();
-        this.bgmInterval = setInterval(playRainDrop, 300);
-    }
-
-    // 5. Fantasy Synth BGM (몽환 우주 신디사이저)
-    startSynthBgm() {
-        const freqs = [130.81, 196.00, 261.63, 392.00];
+    // 3. Soft Breeze BGM (신규: 잔잔한 봄바람 - 아늑한 삼각파 힐링 멜로디)
+    startBreezeBgm() {
+        const breezeMelody = [329.63, 392.00, 440.00, 523.25, 440.00, 392.00];
         let step = 0;
 
-        const playSynthPad = () => {
-            const freq = freqs[step % freqs.length];
+        const playBreezeStep = () => {
+            const freq = breezeMelody[step % breezeMelody.length];
             const osc = this.ctx.createOscillator();
             const gain = this.ctx.createGain();
-            osc.type = 'sawtooth';
+            osc.type = 'triangle';
             osc.frequency.value = freq;
 
-            const filter = this.ctx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(300, this.ctx.currentTime);
-            filter.frequency.linearRampToValueAtTime(1200, this.ctx.currentTime + 1.5);
-            filter.frequency.linearRampToValueAtTime(300, this.ctx.currentTime + 3);
+            gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.5);
 
-            gain.gain.setValueAtTime(0.02, this.ctx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.05, this.ctx.currentTime + 1.5);
-            gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 3);
-
-            osc.connect(filter);
-            filter.connect(gain);
+            osc.connect(gain);
             gain.connect(this.bgmGain);
-
             osc.start();
-            osc.stop(this.ctx.currentTime + 3);
+            osc.stop(this.ctx.currentTime + 1.5);
             this.bgmNodes.push(osc);
             step++;
         };
 
-        playSynthPad();
-        this.bgmInterval = setInterval(playSynthPad, 2500);
+        playBreezeStep();
+        this.bgmInterval = setInterval(playBreezeStep, 1000);
+    }
+
+    // 4. Starlight Lullaby BGM (신규: 포근한 별빛 - 오르골 같은 잔잔함)
+    startStarlightBgm() {
+        const starNotes = [523.25, 587.33, 659.25, 783.99, 659.25, 587.33];
+        let step = 0;
+
+        const playStar = () => {
+            const freq = starNotes[step % starNotes.length];
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.value = freq;
+
+            gain.gain.setValueAtTime(0.04, this.ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.9);
+
+            osc.connect(gain);
+            gain.connect(this.bgmGain);
+            osc.start();
+            osc.stop(this.ctx.currentTime + 0.9);
+            this.bgmNodes.push(osc);
+            step++;
+        };
+
+        playStar();
+        this.bgmInterval = setInterval(playStar, 650);
+    }
+
+    // 5. Cloud Ambient BGM (신규: 부드러운 구름 - 아늑한 앰비언트 패드)
+    startCloudBgm() {
+        const cloudPads = [
+            [174.61, 261.63, 329.63], // Fmaj
+            [220.00, 261.63, 329.63], // Am
+            [196.00, 246.94, 293.66]  // G
+        ];
+        let step = 0;
+
+        const playCloudPad = () => {
+            const pad = cloudPads[step % cloudPads.length];
+            pad.forEach(freq => {
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+
+                gain.gain.setValueAtTime(0.01, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.035, this.ctx.currentTime + 1.2);
+                gain.gain.linearRampToValueAtTime(0.001, this.ctx.currentTime + 2.5);
+
+                osc.connect(gain);
+                gain.connect(this.bgmGain);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 2.5);
+                this.bgmNodes.push(osc);
+            });
+            step++;
+        };
+
+        playCloudPad();
+        this.bgmInterval = setInterval(playCloudPad, 2600);
     }
 
     // 6. Cozy Jazz BGM (카페 아늑 재즈)
