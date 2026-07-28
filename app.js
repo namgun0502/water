@@ -477,11 +477,19 @@ class AuthManager {
             const { data: signUpData, error: signUpError } = await sbClient.auth.signUp({ email, password });
 
             if (signUpError) {
-                let msg = signUpError.message;
-                if (signUpError.status === 422) {
-                    msg = '이미 존재하는 이메일이거나 비밀번호가 6자리 미만입니다.';
+                // 이미 등록된 사용자일 경우 바로 로그인 시도
+                const { data: directSignIn, error: directSignInErr } = await sbClient.auth.signInWithPassword({ email, password });
+                if (!directSignInErr && directSignIn && directSignIn.user) {
+                    alert('👋 이미 가입된 계정입니다. 해당 계정으로 로그인하여 게임을 시작합니다!');
+                    await startGameAfterAuth(directSignIn.user, false);
+                    return;
                 }
-                alert('⚠️ 회원가입 실패: ' + msg);
+
+                let msg = signUpError.message;
+                if (signUpError.status === 422 || msg.includes('already registered')) {
+                    msg = '이미 존재하는 이메일입니다. 비밀번호를 확인하시거나 로그인 탭에서 로그인해 주세요.';
+                }
+                alert('⚠️ 회원가입 안내: ' + msg);
                 this.showError('signup', msg);
                 return;
             }
