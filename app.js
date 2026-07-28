@@ -477,20 +477,27 @@ class AuthManager {
             const { data: signUpData, error: signUpError } = await sbClient.auth.signUp({ email, password });
 
             if (signUpError) {
-                // 이미 등록된 사용자일 경우 바로 로그인 시도
-                const { data: directSignIn, error: directSignInErr } = await sbClient.auth.signInWithPassword({ email, password });
-                if (!directSignInErr && directSignIn && directSignIn.user) {
-                    alert('👋 이미 가입된 계정입니다. 해당 계정으로 로그인하여 게임을 시작합니다!');
-                    await startGameAfterAuth(directSignIn.user, false);
+                const errorMsg = signUpError.message || '';
+                const isAlreadyRegistered = errorMsg.toLowerCase().includes('already registered') || 
+                                           errorMsg.toLowerCase().includes('already exists') ||
+                                           errorMsg.toLowerCase().includes('user_already_exists');
+
+                if (isAlreadyRegistered) {
+                    // 이미 진짜로 가입된 경우에만 우회 자동 로그인 시도
+                    const { data: directSignIn, error: directSignInErr } = await sbClient.auth.signInWithPassword({ email, password });
+                    if (!directSignInErr && directSignIn && directSignIn.user) {
+                        alert('👋 이미 가입된 계정입니다. 해당 계정으로 로그인합니다!');
+                        await startGameAfterAuth(directSignIn.user, false);
+                        return;
+                    }
+                    alert('⚠️ 이미 가입된 이메일입니다. 비밀번호를 확인하시거나 로그인 탭에서 로그인해 주세요.');
+                    this.showError('signup', '이미 가입된 이메일입니다.');
                     return;
                 }
 
-                let msg = signUpError.message;
-                if (signUpError.status === 422 || msg.includes('already registered')) {
-                    msg = '이미 존재하는 이메일입니다. 비밀번호를 확인하시거나 로그인 탭에서 로그인해 주세요.';
-                }
-                alert('⚠️ 회원가입 안내: ' + msg);
-                this.showError('signup', msg);
+                // 그 외 일반 에러(예: 비밀번호 부족, Supabase 설정 등)
+                alert('⚠️ 회원가입 실패: ' + errorMsg);
+                this.showError('signup', errorMsg);
                 return;
             }
 
