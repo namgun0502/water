@@ -575,10 +575,17 @@ class PlayerDataManager {
 
     // Supabase에 현재 설정 저장 (스테이지, 배경, BGM, 볼륨)
     async save(settings) {
-        await sbClient
-            .from('player_settings')
-            .update({ ...settings, updated_at: new Date().toISOString() })
-            .eq('id', this.userId);
+        try {
+            await sbClient
+                .from('player_settings')
+                .upsert({
+                    id: this.userId,
+                    ...settings,
+                    updated_at: new Date().toISOString()
+                });
+        } catch (e) {
+            console.error('Supabase DB 저장 에러:', e);
+        }
     }
 }
 
@@ -780,11 +787,13 @@ class WaterSortGame {
         this.bgThemeSelect.addEventListener('change', (e) => {
             this.applyBgTheme(e.target.value);
             soundEngine.playPop();
+            this.saveProgress(); // 즉시 DB 저장
         });
 
         // BGM 트랙 변경 이벤트
         this.bgmSelect.addEventListener('change', (e) => {
             soundEngine.changeBgm(e.target.value);
+            this.saveProgress(); // 즉시 DB 저장
         });
 
         // BGM 볼륨 슬라이더
@@ -1057,6 +1066,8 @@ class WaterSortGame {
                     origin: { y: 0.6 }
                 });
             }
+            // 🌟 승리하자마자 실시간으로 다음 스테이지 데이터 Supabase DB에 저장
+            this.saveProgress();
             setTimeout(() => {
                 this.winModal.classList.remove('hidden');
             }, 400);
