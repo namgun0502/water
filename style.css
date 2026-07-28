@@ -1,0 +1,482 @@
+/* ==========================================================================
+   Water Sort Puzzle - Modern Glassmorphism Design System
+   ========================================================================== */
+
+/* 1. 디자인 토큰 & 변수 설정 (색상, 파스텔 파렛트 등) */
+:root {
+    /* 배경 & 기본 테마 */
+    --bg-main: #0f172a;
+    --bg-secondary: #1e293b;
+    --accent-glow: #38bdf8;
+
+    /* 유리병 질감 색상 */
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-bg: rgba(255, 255, 255, 0.07);
+    --glass-highlight: rgba(255, 255, 255, 0.25);
+    --glass-shadow: rgba(0, 0, 0, 0.35);
+
+    /* 액체 파스텔 & 네온 힐링 색상 파렛트 (10가지 색상) */
+    --color-1: #ff5964; /* Vibrant Coral Red */
+    --color-2: #ffad5a; /* Warm Apricot Orange */
+    --color-3: #fec051; /* Soft Sunflower Yellow */
+    --color-4: #4cd964; /* Emerald Green */
+    --color-5: #10b981; /* Mint Teal */
+    --color-6: #38bdf8; /* Ocean Sky Blue */
+    --color-7: #6366f1; /* Deep Indigo */
+    --color-8: #a855f7; /* Royal Purple */
+    --color-9: #ec4899; /* Berry Pink */
+    --color-10: #94a3b8; /* Cool Metallic Silver */
+
+    /* 텍스트 & 아이콘 */
+    --text-bright: #ffffff;
+    --text-muted: #94a3b8;
+    --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* 2. 글로벌 초기화 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--bg-main);
+    font-family: var(--font-family);
+    color: var(--text-bright);
+}
+
+/* 3. 전체 레이아웃 (모바일 세로형 최적화) */
+#app {
+    position: relative;
+    width: 100%;
+    max-width: 500px; /* 모바일 프레임 너비 제한 */
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 70%);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+}
+
+/* 배경 오로라 분위기 빛 효과 */
+.bg-glow {
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.25;
+    pointer-events: none;
+    z-index: 0;
+}
+.bg-glow-1 {
+    top: -50px;
+    left: -50px;
+    background: #a855f7;
+}
+.bg-glow-2 {
+    bottom: -50px;
+    right: -50px;
+    background: #38bdf8;
+}
+
+/* 4. 상단 헤더 */
+.game-header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+}
+
+.stage-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stage-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--accent-glow);
+}
+
+.stage-num {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 0 12px rgba(56, 189, 248, 0.5);
+}
+
+.icon-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    color: var(--text-bright);
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.icon-btn:active {
+    transform: scale(0.92);
+    background: rgba(255, 255, 255, 0.18);
+}
+
+/* 5. 퍼즐 메인 보드 영역 */
+.game-board-container {
+    position: relative;
+    flex: 1;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+}
+
+/* 물 붓기 SVG 물줄기 overlay */
+.stream-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 20;
+}
+
+/* 유리병 배치 격자 */
+.bottles-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    gap: 24px 18px;
+    width: 100%;
+    max-width: 420px;
+}
+
+/* 6. 유리병 (Bottle) 디자인 & 애니메이션 */
+.bottle-wrapper {
+    position: relative;
+    width: 52px;
+    height: 175px;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* 선택된 병 튀어오름 효과 */
+.bottle-wrapper.selected {
+    transform: translateY(-24px);
+}
+
+.bottle-wrapper.selected .bottle {
+    box-shadow: 0 0 25px rgba(56, 189, 248, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.5);
+    border-color: #ffffff;
+}
+
+/* 유리병 자체 */
+.bottle {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px 12px 24px 24px;
+    border: 3px solid var(--glass-border);
+    background: var(--glass-bg);
+    backdrop-filter: blur(8px);
+    box-shadow: inset 0 0 12px var(--glass-highlight), 0 10px 20px var(--glass-shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column-reverse; /* 액체를 아래에서부터 쌓음 */
+    padding: 3px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+/* 유리병 상단 입구 Rim */
+.bottle-rim {
+    position: absolute;
+    top: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 58px;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.25);
+    border: 2px solid var(--glass-border);
+    z-index: 6;
+}
+
+/* 유리병 내부 하이라이트 광택선 */
+.bottle::after {
+    content: '';
+    position: absolute;
+    top: 5%;
+    left: 6px;
+    width: 4px;
+    height: 85%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.6), rgba(255,255,255,0.05));
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 5;
+}
+
+/* 7. 액체 층 (Water Layer) */
+.water-layer {
+    width: 100%;
+    height: 25%; /* 기본 4칸 중 1칸 = 25% */
+    border-radius: 2px;
+    transition: height 0.35s ease-in-out, background-color 0.2s;
+    position: relative;
+}
+
+/* 맨 위 액체 층의 수면 물결 효과 */
+.water-layer:last-child {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
+.water-layer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.35);
+}
+
+/* 8. 하단 컨트롤 버튼 */
+.game-controls {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 16px 20px 28px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.control-btn {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.control-btn .btn-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.control-btn .btn-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.control-btn:active .btn-icon {
+    transform: scale(0.9);
+    background: rgba(56, 189, 248, 0.2);
+}
+
+.control-btn.highlight .btn-icon {
+    background: linear-gradient(135deg, #38bdf8, #6366f1);
+    box-shadow: 0 4px 15px rgba(56, 189, 248, 0.4);
+    border: none;
+}
+
+.badge {
+    position: absolute;
+    top: -2px;
+    right: 6px;
+    background: #ff5964;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 800;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--bg-main);
+}
+
+/* 9. 승리 & 도움말 모달 (Modal) */
+.modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.modal-backdrop.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-card {
+    width: 100%;
+    max-width: 340px;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 28px;
+    padding: 32px 24px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modalPop {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.win-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fec051, #ffad5a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: #ffffff;
+    box-shadow: 0 10px 25px rgba(254, 192, 81, 0.4);
+}
+
+.win-title {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 6px;
+}
+
+.win-subtitle {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+}
+
+.primary-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 16px;
+    border: none;
+    background: linear-gradient(135deg, #38bdf8, #6366f1);
+    color: white;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 8px 20px rgba(56, 189, 248, 0.35);
+    transition: transform 0.2s;
+}
+
+.primary-btn:active {
+    transform: scale(0.96);
+}
+
+/* 도움말 모달 전용 */
+.info-card {
+    text-align: left;
+    padding: 24px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.modal-header h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.guide-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.guide-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent-glow);
+    color: #0f172a;
+    font-weight: 800;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.guide-item p {
+    font-size: 0.9rem;
+    line-height: 1.4;
+    color: #cbd5e1;
+}

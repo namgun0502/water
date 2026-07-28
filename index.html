@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Water Sort Puzzle - 색깔 물 옮기기 퍼즐</title>
+    <!-- Google Fonts: 모던하고 깔끔한 폰트 적용 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome 아이콘 레퍼런스 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- 전체 화면 앱 컨테이너 -->
+    <div id="app">
+        <!-- 배경 다이내믹 그라데이션 및 파티클 레이어 -->
+        <div class="bg-glow bg-glow-1"></div>
+        <div class="bg-glow bg-glow-2"></div>
+
+        <!-- 상단 헤더 영역 -->
+        <header class="game-header">
+            <div class="header-left">
+                <button id="btn-sound" class="icon-btn" aria-label="음소거 토글">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+            </div>
+            <div class="stage-info">
+                <span class="stage-label">STAGE</span>
+                <span id="stage-number" class="stage-num">1</span>
+            </div>
+            <div class="header-right">
+                <button id="btn-info" class="icon-btn" aria-label="게임 방법">
+                    <i class="fa-solid fa-circle-question"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- 핵심 게임 메인 영역 (유리병이 배치되는 공간) -->
+        <main class="game-board-container">
+            <!-- 물 줄기 렌더링용 SVG Canvas Overlay -->
+            <svg id="stream-canvas" class="stream-canvas"></svg>
+
+            <!-- 유리병 목록 격자 -->
+            <div id="bottles-container" class="bottles-container">
+                <!-- JavaScript에서 동적으로 유리병 요소들이 생성됩니다 -->
+            </div>
+        </main>
+
+        <!-- 하단 컨트롤 버튼 영역 (도구 아이템) -->
+        <footer class="game-controls">
+            <!-- 되돌리기 버튼 -->
+            <button id="btn-undo" class="control-btn" title="한 단계를 되돌립니다">
+                <div class="btn-icon"><i class="fa-solid fa-rotate-left"></i></div>
+                <span class="btn-text">되돌리기</span>
+            </button>
+
+            <!-- 재시작 버튼 -->
+            <button id="btn-reset" class="control-btn" title="현재 스테이지를 처음부터 다시 시작합니다">
+                <div class="btn-icon"><i class="fa-solid fa-arrows-rotate"></i></div>
+                <span class="btn-text">재시작</span>
+            </button>
+
+            <!-- 보너스 병 추가 버튼 -->
+            <button id="btn-add-bottle" class="control-btn highlight" title="빈 유리병 1개를 추가합니다">
+                <div class="btn-icon"><i class="fa-solid fa-plus"></i></div>
+                <span class="btn-text">병 추가</span>
+                <span id="add-bottle-badge" class="badge">1</span>
+            </button>
+        </footer>
+
+        <!-- 스테이지 클리어 승리 축하 모달 -->
+        <div id="win-modal" class="modal-backdrop hidden">
+            <div class="modal-card win-card">
+                <div class="win-icon-wrapper">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+                <h2 class="win-title">STAGE CLEAR!</h2>
+                <p class="win-subtitle">완벽하게 정리되었습니다! 👏</p>
+                
+                <div class="win-actions">
+                    <button id="btn-next-stage" class="primary-btn">
+                        <span>다음 단계를 도전!</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 게임 설명 도움말 모달 -->
+        <div id="info-modal" class="modal-backdrop hidden">
+            <div class="modal-card info-card">
+                <div class="modal-header">
+                    <h3>🎮 게임 방법</h3>
+                    <button id="btn-close-info" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div class="guide-item">
+                        <span class="guide-num">1</span>
+                        <p>옮길 물이 있는 **유리병을 터치**하여 선택합니다.</p>
+                    </div>
+                    <div class="guide-item">
+                        <span class="guide-num">2</span>
+                        <p>물을 부을 **목적지 유리병을 터치**합니다.</p>
+                    </div>
+                    <div class="guide-item">
+                        <span class="guide-num">3</span>
+                        <p>목적지 병의 맨 위 물 색깔이 **같거나**, 병이 **완전히 비어 있을 때만** 부을 수 있습니다.</p>
+                    </div>
+                    <div class="guide-item">
+                        <span class="guide-num">4</span>
+                        <p>모든 병이 한 가지 색상으로만 정리되면 성공입니다! 🌟</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 캔버스 폭죽 효과 라이브러리 (Confetti) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
