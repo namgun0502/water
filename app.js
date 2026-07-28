@@ -395,20 +395,21 @@ class AuthManager {
 
     // 로그인 / 회원가입 이벤트 연결
     initAuthEvents() {
-        // 폼 제출 기본 동작(페이지 새로고침) 방지
-        this.loginForm.addEventListener('submit', (e) => e.preventDefault());
-        this.signupForm.addEventListener('submit', (e) => e.preventDefault());
+        // 로그인 폼 제출 이벤트
+        if (this.loginForm) {
+            this.loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await this.handleLogin();
+            });
+        }
 
-        // 버튼 클릭 이벤트 직접 연결
-        document.getElementById('btn-login').addEventListener('click', async (e) => {
-            e.preventDefault();
-            await this.handleLogin();
-        });
-
-        document.getElementById('btn-signup').addEventListener('click', async (e) => {
-            e.preventDefault();
-            await this.handleSignup();
-        });
+        // 회원가입 폼 제출 이벤트
+        if (this.signupForm) {
+            this.signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await this.handleSignup();
+            });
+        }
     }
 
     // 로그인 처리

@@ -798,6 +798,10 @@ html, body {
     transition: all 0.2s ease;
     box-shadow: 0 4px 15px rgba(56, 189, 248, 0.35);
 }
+.auth-submit-btn * {
+    pointer-events: none; /* 내부 자식 요소가 클릭 이벤트를 방해하지 않도록 보장 */
+}
+
 .auth-submit-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
