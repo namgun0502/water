@@ -447,19 +447,36 @@ class AuthManager {
         btn.querySelector('span').textContent = '가입 중...';
 
         // Supabase Auth로 회원가입
-        const { data, error } = await supabase.auth.signUp({ email, password });
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({ email, password });
 
-        btn.disabled = false;
-        btn.querySelector('span').textContent = '회원가입';
-
-        if (error) {
+        if (signUpError) {
+            btn.disabled = false;
+            btn.querySelector('span').textContent = '회원가입';
             this.showError('signup', '이미 사용 중인 이메일이거나 오류가 발생했습니다.');
             return;
         }
 
+        // 🌟 이메일 확인 설정과 무관하게 세션을 확보하기 위해 자동 로그인 시도
+        let finalUser = signUpData.user;
+        if (!signUpData.session) {
+            // 세션이 없으면(이메일 확인 필요 상태) 자동으로 로그인 재시도
+            const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+            if (signInError || !signInData.user) {
+                btn.disabled = false;
+                btn.querySelector('span').textContent = '회원가입';
+                this.showError('signup', '가입은 완료되었습니다! 로그인 탭에서 로그인해 주세요.');
+                switchTab('login');
+                return;
+            }
+            finalUser = signInData.user;
+        }
+
+        btn.disabled = false;
+        btn.querySelector('span').textContent = '회원가입';
+
         // DB에 초기 플레이어 설정 저장 (닉네임 포함)
         await supabase.from('player_settings').insert({
-            id: data.user.id,
+            id: finalUser.id,
             nickname: nickname,
             stage: 1,
             bg_theme: 'deep-space',
@@ -468,8 +485,8 @@ class AuthManager {
             sfx_volume: 80
         });
 
-        // 가입 성공 → 새 게임 시작
-        await startGameAfterAuth(data.user, true);
+        // 가입 + 로그인 성공 → 새 게임 시작
+        await startGameAfterAuth(finalUser, true);
     }
 
     // 오류 메시지 표시
