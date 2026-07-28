@@ -602,45 +602,64 @@ class WaterSortGame {
         const fromBottle = this.bottles[fromIdx];
         const toBottle = this.bottles[toIdx];
 
-        if (fromBottle.length === 0) return false;
-        if (toBottle.length >= BOTTLE_CAPACITY) return false;
+        if (!fromBottle || !toBottle) return false;
+        if (fromBottle.length === 0) return false; // 옮길 액체가 없음
+        if (toBottle.length >= BOTTLE_CAPACITY) return false; // 받는 병이 꽉 차있음
 
         const topColorFrom = fromBottle[fromBottle.length - 1];
 
-        if (toBottle.length === 0) return true;
+        if (toBottle.length === 0) return true; // 받는 병이 비어있으면 언제든 가능
         const topColorTo = toBottle[toBottle.length - 1];
 
-        return topColorFrom === topColorTo;
+        // 🌟 대소문자 구문 및 공백 차이 오류 방지를 위해 toUpperCase()로 트림 비교
+        return topColorFrom.trim().toUpperCase() === topColorTo.trim().toUpperCase();
     }
 
     async pourWater(fromIdx, toIdx) {
         this.isAnimating = true;
-        const fromBottle = this.bottles[fromIdx];
-        const toBottle = this.bottles[toIdx];
+        
+        try {
+            const fromBottle = this.bottles[fromIdx];
+            const toBottle = this.bottles[toIdx];
 
-        const pourColor = fromBottle[fromBottle.length - 1];
+            if (!fromBottle || fromBottle.length === 0) return;
 
-        let pourCount = 0;
-        for (let i = fromBottle.length - 1; i >= 0; i--) {
-            if (fromBottle[i] === pourColor) pourCount++;
-            else break;
+            const pourColor = fromBottle[fromBottle.length - 1];
+
+            // 이동할 동일한 색상의 액체 층 개수 계산
+            let pourCount = 0;
+            for (let i = fromBottle.length - 1; i >= 0; i--) {
+                if (fromBottle[i].trim().toUpperCase() === pourColor.trim().toUpperCase()) {
+                    pourCount++;
+                } else {
+                    break;
+                }
+            }
+
+            const availableSpace = BOTTLE_CAPACITY - toBottle.length;
+            const actualPourCount = Math.min(pourCount, availableSpace);
+
+            if (actualPourCount <= 0) return;
+
+            // 물 소리 재생
+            soundEngine.playPourSound(actualPourCount * 300);
+
+            // 실제 물 데이터 이동
+            for (let i = 0; i < actualPourCount; i++) {
+                fromBottle.pop();
+                toBottle.push(pourColor);
+            }
+
+            this.selectedBottleIdx = null;
+            this.render();
+
+            await new Promise(res => setTimeout(res, 300));
+        } catch (error) {
+            console.error("Pouring error:", error);
+        } finally {
+            // 🌟 무슨 일이 있어도 isAnimating을 해제하여 병 터치가 막히는 현상 방지
+            this.isAnimating = false;
         }
-
-        const availableSpace = BOTTLE_CAPACITY - toBottle.length;
-        const actualPourCount = Math.min(pourCount, availableSpace);
-
-        soundEngine.playPourSound(actualPourCount * 300);
-
-        for (let i = 0; i < actualPourCount; i++) {
-            fromBottle.pop();
-            toBottle.push(pourColor);
-        }
-
-        this.selectedBottleIdx = null;
-        this.render();
-
-        await new Promise(res => setTimeout(res, 350));
-        this.isAnimating = false;
 
         this.checkWinCondition();
     }
