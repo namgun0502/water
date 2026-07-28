@@ -275,29 +275,29 @@ class WaterSortGame {
         });
     }
 
-    // 유리병 클릭 처리
+    // 유리병 터치/클릭 처리
     handleBottleClick(bIdx) {
-        if (this.isAnimating) return; // 물 붓는 중에는 클릭 무시
+        if (this.isAnimating) return; // 물 붓는 애니메이션 중에는 클릭 무시
 
-        soundEngine.playPop();
-
-        // 1. 선택된 병이 없을 때 (출처 병 선택)
-        if (this.selectedBottleIdx === null) {
-            // 빈 병은 선택 불가능
-            if (this.bottles[bIdx].length === 0) return;
-            this.selectedBottleIdx = bIdx;
-            this.render();
-            return;
-        }
-
-        // 2. 이미 선택된 병을 다시 누르면 선택 해제
+        // 1. 이미 선택된 병을 다시 누르면 -> 선택 즉시 취소! (원래 위치로 내려옴)
         if (this.selectedBottleIdx === bIdx) {
-            this.selectedBottleIdx = null;
+            soundEngine.playPop(); // 부드러운 해제음
+            this.selectedBottleIdx = null; // 선택 해제
+            this.render(); // 화면 즉시 갱신
+            return;
+        }
+
+        // 2. 선택된 병이 없을 때 -> 새로운 출처 병 선택
+        if (this.selectedBottleIdx === null) {
+            // 빈 병은 물이 없으므로 선택 불가능
+            if (this.bottles[bIdx].length === 0) return;
+            soundEngine.playPop();
+            this.selectedBottleIdx = bIdx; // 병 선택
             this.render();
             return;
         }
 
-        // 3. 다른 병 선택 -> 물 이동 조건 검증
+        // 3. 이미 다른 병이 선택된 상태에서 두 번째 병 선택 -> 물 옮기기 시도
         const fromIdx = this.selectedBottleIdx;
         const toIdx = bIdx;
 
@@ -307,7 +307,9 @@ class WaterSortGame {
             // 물 옮기기 실행
             this.pourWater(fromIdx, toIdx);
         } else {
-            // 부을 수 없을 때는 선택을 새 병으로 변경 (단, 새 병이 비어있지 않다면)
+            // 부을 수 없는 경우에는
+            // 만약 새로 누른 병에 물이 들어있다면 해당 병으로 선택 변경, 비어있으면 선택 취소
+            soundEngine.playPop();
             if (this.bottles[toIdx].length > 0) {
                 this.selectedBottleIdx = toIdx;
             } else {
