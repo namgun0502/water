@@ -657,19 +657,56 @@ async function startGameAfterAuth(user, isNewUser = false) {
         return;
     }
 
+    // 유저의 max_stage (없으면 기본 stage 또는 1)
+    const userMaxStage = (settings && settings.max_stage) ? settings.max_stage : (settings ? settings.stage : 1);
+
     // 저장된 스테이지가 2 이상이면 선택 모달 표시
     const continueModal = document.getElementById('continue-modal');
     document.getElementById('continue-welcome').textContent =
-        `${settings.nickname}님, 반갑습니다!`;
-    document.getElementById('continue-info').textContent =
-        `마지막으로 진행한 스테이지: ${settings.stage}단계`;
+        `${settings ? settings.nickname : '플레이어'}님, 반갑습니다!`;
+    document.getElementById('continue-max-stage-text').textContent =
+        `${userMaxStage}단계`;
+    document.getElementById('btn-max-stage-num').textContent = userMaxStage;
+
+    const inputEl = document.getElementById('continue-stage-input');
+    inputEl.setAttribute('max', userMaxStage);
+    inputEl.value = userMaxStage;
+
+    const hintEl = document.getElementById('continue-input-hint');
+    hintEl.textContent = `💡 1단계부터 ${userMaxStage}단계까지 지정할 수 있습니다.`;
+    hintEl.style.color = '';
+
     continueModal.classList.remove('hidden');
     document.getElementById('app').classList.remove('hidden');
 
-    // 게임 시작하기 버튼 클릭 이벤트
-    document.getElementById('btn-continue').onclick = () => {
+    // 1. 최고 기록에서 시작 버튼
+    document.getElementById('btn-continue-max').onclick = () => {
         continueModal.classList.add('hidden');
-        window.gameApp = new WaterSortGame(user, playerData, settings, true);
+        // settings의 stage를 maxStage로 지정하여 진입
+        const launchSettings = { ...settings, stage: userMaxStage };
+        window.gameApp = new WaterSortGame(user, playerData, launchSettings, true);
+    };
+
+    // 2. 입력한 스테이지 번호로 시작 버튼
+    document.getElementById('btn-continue-select').onclick = () => {
+        let entered = parseInt(inputEl.value, 10);
+        if (isNaN(entered) || entered < 1) {
+            hintEl.textContent = `⚠️ 1 이상의 올바른 숫자를 입력해 주세요.`;
+            hintEl.style.color = '#ff5964';
+            return;
+        }
+
+        // 🌟 최고 기록(maxStage) 초과 숫자는 입력해도 갈 수 없도록 완벽 차단!
+        if (entered > userMaxStage) {
+            hintEl.textContent = `🚫 최고 기록(${userMaxStage}단계)을 초과한 스테이지로는 갈 수 없습니다!`;
+            hintEl.style.color = '#ff5964';
+            inputEl.value = userMaxStage; // 즉시 최대 허용 단계로 제한 보정
+            return;
+        }
+
+        continueModal.classList.add('hidden');
+        const launchSettings = { ...settings, stage: entered };
+        window.gameApp = new WaterSortGame(user, playerData, launchSettings, true);
     };
 }
 

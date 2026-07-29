@@ -86,19 +86,37 @@
     </div>
 
     <!-- ======================================================= -->
-    <!-- 🎮 이어서 진행 / 처음부터 시작 선택 모달                   -->
-    <!-- 로그인 성공 후 표시됩니다.                                 -->
+    <!-- 🎮 로그인 후 스테이지 시작 선택 모달                       -->
     <!-- ======================================================= -->
     <div id="continue-modal" class="modal-backdrop hidden">
         <div class="modal-card continue-card">
             <div class="continue-icon">👋</div>
             <h2 id="continue-welcome" class="continue-title">반갑습니다!</h2>
-            <p id="continue-info" class="continue-info">저장된 진행 상황이 있습니다.</p>
-            <div class="continue-actions">
-                <button id="btn-continue" class="continue-btn primary">
-                    <i class="fa-solid fa-play"></i>
-                    <span>게임 시작하기</span>
+            <p id="continue-info" class="continue-info">최고 달성 기록: <b id="continue-max-stage-text">1단계</b></p>
+            
+            <div class="continue-actions-box">
+                <!-- 1. 최고 기록에서 계속 플레이 -->
+                <button id="btn-continue-max" class="continue-btn primary">
+                    <i class="fa-solid fa-trophy"></i>
+                    <span>최고 기록에서 시작 (<span id="btn-max-stage-num">1</span>단계)</span>
                 </button>
+
+                <div class="continue-divider">
+                    <span>또는 스테이지 직접 선택</span>
+                </div>
+
+                <!-- 2. 클리어한 스테이지 직접 입력 / 선택 -->
+                <div class="continue-stage-input-group">
+                    <label for="continue-stage-input" class="input-label">원하는 스테이지 번호 입력:</label>
+                    <div class="stage-input-row">
+                        <input type="number" id="continue-stage-input" min="1" max="1" value="1" placeholder="번호 입력">
+                        <button id="btn-continue-select" class="continue-btn secondary">
+                            <i class="fa-solid fa-circle-play"></i>
+                            <span>이동하기</span>
+                        </button>
+                    </div>
+                    <p id="continue-input-hint" class="stage-select-hint">💡 1단계부터 최고 달성 단계까지만 이동 가능합니다.</p>
+                </div>
             </div>
         </div>
     </div>

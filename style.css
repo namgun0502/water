@@ -589,6 +589,76 @@ html, body {
     to { transform: scale(1); opacity: 1; }
 }
 
+/* continue-modal 스타일 */
+.continue-card {
+    text-align: center;
+}
+.continue-actions-box {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.continue-divider {
+    position: relative;
+    text-align: center;
+    margin: 6px 0;
+}
+.continue-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 0; right: 0;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.15);
+}
+.continue-divider span {
+    position: relative;
+    background: #1e293b;
+    padding: 0 10px;
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+.continue-stage-input-group {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 14px;
+    text-align: left;
+}
+.continue-stage-input-group .input-label {
+    display: block;
+    font-size: 0.82rem;
+    color: #cbd5e1;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+.stage-input-row {
+    display: flex;
+    gap: 8px;
+}
+.stage-input-row input {
+    flex: 1;
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+    padding: 10px 12px;
+    text-align: center;
+    outline: none;
+}
+.stage-input-row input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+}
+.stage-input-row .continue-btn {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+
 .win-card {
     text-align: center;
 }
