@@ -78,8 +78,8 @@ html, body {
     pointer-events: none;
     animation: starsPulse 4s ease-in-out infinite alternate;
 }
-#app[data-theme="deep-space"] .bg-glow-1 { background: #c084fc; width: 320px; height: 320px; opacity: 0.35; animation: floatGlow 10s ease-in-out infinite alternate; }
-#app[data-theme="deep-space"] .bg-glow-2 { background: #38bdf8; width: 280px; height: 280px; opacity: 0.3; animation: floatGlow 12s ease-in-out infinite alternate-reverse; }
+#app[data-theme="deep-space"] .bg-glow-1 { background: radial-gradient(circle, #c084fc, #7c3aed); width: 380px; height: 380px; animation: auroraGlow1 10s ease-in-out infinite alternate; }
+#app[data-theme="deep-space"] .bg-glow-2 { background: radial-gradient(circle, #38bdf8, #0ea5e9); width: 340px; height: 340px; animation: auroraGlow2 12s ease-in-out infinite alternate-reverse; }
 
 /* 2. 🌊 Ocean Depths - 심해 해저 라이트 레이 & 신비로운 수중 파동 */
 #app[data-theme="ocean-depths"] {
@@ -92,8 +92,8 @@ html, body {
     background: repeating-linear-gradient(45deg, rgba(56, 189, 248, 0.04) 0px, rgba(56, 189, 248, 0.04) 20px, transparent 20px, transparent 60px);
     pointer-events: none;
 }
-#app[data-theme="ocean-depths"] .bg-glow-1 { background: #38bdf8; width: 340px; height: 340px; opacity: 0.4; animation: floatGlow 9s ease-in-out infinite alternate; }
-#app[data-theme="ocean-depths"] .bg-glow-2 { background: #2dd4bf; width: 300px; height: 300px; opacity: 0.35; animation: floatGlow 11s ease-in-out infinite alternate-reverse; }
+#app[data-theme="ocean-depths"] .bg-glow-1 { background: radial-gradient(circle, #38bdf8, #0369a1); width: 380px; height: 380px; animation: auroraGlow1 9s ease-in-out infinite alternate; }
+#app[data-theme="ocean-depths"] .bg-glow-2 { background: radial-gradient(circle, #2dd4bf, #0891b2); width: 340px; height: 340px; animation: auroraGlow2 11s ease-in-out infinite alternate-reverse; }
 
 /* 3. 🌸 Cherry Blossom - 로맨틱 벚꽃 정원 & 은은한 꽃가루 오로라 */
 #app[data-theme="cherry-blossom"] {
@@ -112,8 +112,8 @@ html, body {
     opacity: 0.5;
     pointer-events: none;
 }
-#app[data-theme="cherry-blossom"] .bg-glow-1 { background: #f472b6; width: 320px; height: 320px; opacity: 0.35; animation: floatGlow 8s ease-in-out infinite alternate; }
-#app[data-theme="cherry-blossom"] .bg-glow-2 { background: #fb7185; width: 280px; height: 280px; opacity: 0.3; animation: floatGlow 10s ease-in-out infinite alternate-reverse; }
+#app[data-theme="cherry-blossom"] .bg-glow-1 { background: radial-gradient(circle, #f472b6, #be185d); width: 380px; height: 380px; animation: auroraGlow1 8s ease-in-out infinite alternate; }
+#app[data-theme="cherry-blossom"] .bg-glow-2 { background: radial-gradient(circle, #fb7185, #e11d48); width: 340px; height: 340px; animation: auroraGlow2 10s ease-in-out infinite alternate-reverse; }
 
 /* 4. 🌿 Forest Night - 신비로운 다크 에메랄드 숲속 반딧불이 */
 #app[data-theme="forest-night"] {
@@ -132,8 +132,8 @@ html, body {
     pointer-events: none;
     animation: starsPulse 3s ease-in-out infinite alternate;
 }
-#app[data-theme="forest-night"] .bg-glow-1 { background: #4ade80; width: 320px; height: 320px; opacity: 0.35; animation: floatGlow 9s ease-in-out infinite alternate; }
-#app[data-theme="forest-night"] .bg-glow-2 { background: #10b981; width: 300px; height: 300px; opacity: 0.3; animation: floatGlow 11s ease-in-out infinite alternate-reverse; }
+#app[data-theme="forest-night"] .bg-glow-1 { background: radial-gradient(circle, #4ade80, #15803d); width: 380px; height: 380px; animation: auroraGlow1 9s ease-in-out infinite alternate; }
+#app[data-theme="forest-night"] .bg-glow-2 { background: radial-gradient(circle, #34d399, #065f46); width: 340px; height: 340px; animation: auroraGlow2 11s ease-in-out infinite alternate-reverse; }
 
 /* 5. 🌅 Sunset Glow - 매혹적인 노을 석양 앰버 글로우 */
 #app[data-theme="sunset-glow"] {
@@ -146,8 +146,8 @@ html, body {
     background: linear-gradient(to bottom, rgba(249, 115, 22, 0.08) 0%, transparent 60%);
     pointer-events: none;
 }
-#app[data-theme="sunset-glow"] .bg-glow-1 { background: #fb923c; width: 340px; height: 340px; opacity: 0.4; animation: floatGlow 7s ease-in-out infinite alternate; }
-#app[data-theme="sunset-glow"] .bg-glow-2 { background: #f43f5e; width: 300px; height: 300px; opacity: 0.35; animation: floatGlow 10s ease-in-out infinite alternate-reverse; }
+#app[data-theme="sunset-glow"] .bg-glow-1 { background: radial-gradient(circle, #fb923c, #c2410c); width: 400px; height: 400px; animation: auroraGlow1 7s ease-in-out infinite alternate; }
+#app[data-theme="sunset-glow"] .bg-glow-2 { background: radial-gradient(circle, #f43f5e, #9f1239); width: 360px; height: 360px; animation: auroraGlow2 10s ease-in-out infinite alternate-reverse; }
 
 /* 6. 🍬 Cotton Candy - 꿈결 같은 파스텔 바이올렛 마법 구름 */
 #app[data-theme="cotton-candy"] {
@@ -165,38 +165,53 @@ html, body {
     opacity: 0.65;
     pointer-events: none;
 }
-#app[data-theme="cotton-candy"] .bg-glow-1 { background: #c084fc; width: 340px; height: 340px; opacity: 0.38; animation: floatGlow 8s ease-in-out infinite alternate; }
-#app[data-theme="cotton-candy"] .bg-glow-2 { background: #f472b6; width: 300px; height: 300px; opacity: 0.32; animation: floatGlow 11s ease-in-out infinite alternate-reverse; }
+#app[data-theme="cotton-candy"] .bg-glow-1 { background: radial-gradient(circle, #c084fc, #7c3aed); width: 380px; height: 380px; animation: auroraGlow1 8s ease-in-out infinite alternate; }
+#app[data-theme="cotton-candy"] .bg-glow-2 { background: radial-gradient(circle, #f472b6, #9d174d); width: 340px; height: 340px; animation: auroraGlow2 11s ease-in-out infinite alternate-reverse; }
 
 
 /* 배경 오로라 분위기 빛 효과 & 유동 애니메이션 */
 .bg-glow {
     position: absolute;
     border-radius: 50%;
-    filter: blur(90px);
     pointer-events: none;
     z-index: 0;
-    transition: all 1s ease;
+    transform-origin: center center;
 }
+/* 🌟 bg-glow-1: 화면 상단 중앙에 크게 배치 */
 .bg-glow-1 {
-    top: -60px;
-    left: -60px;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: auroraGlow1 8s ease-in-out infinite alternate;
 }
+/* 🌟 bg-glow-2: 화면 하단 중앙에 크게 배치 */
 .bg-glow-2 {
-    bottom: -60px;
-    right: -60px;
+    bottom: -20%;
+    right: 50%;
+    transform: translateX(50%);
+    animation: auroraGlow2 11s ease-in-out infinite alternate-reverse;
 }
 
-@keyframes floatGlow {
-    0% { transform: translate(0, 0) scale(1); }
-    50% { transform: translate(30px, 40px) scale(1.15); }
-    100% { transform: translate(-20px, 20px) scale(0.95); }
+/* 🌟 오로라 1번: scale + opacity + blur 변화 (위치 이동 없음!) */
+@keyframes auroraGlow1 {
+    0%   { transform: translateX(-50%) scale(0.85); opacity: 0.25; filter: blur(80px); }
+    30%  { transform: translateX(-50%) scale(1.2);  opacity: 0.55; filter: blur(60px); }
+    60%  { transform: translateX(-50%) scale(1.0);  opacity: 0.35; filter: blur(90px); }
+    100% { transform: translateX(-50%) scale(1.35); opacity: 0.5;  filter: blur(50px); }
+}
+
+/* 🌟 오로라 2번: 1번과 반대 리듬으로 호흡하듯 교차 */
+@keyframes auroraGlow2 {
+    0%   { transform: translateX(50%) scale(1.1);  opacity: 0.3;  filter: blur(90px); }
+    40%  { transform: translateX(50%) scale(0.8);  opacity: 0.5;  filter: blur(60px); }
+    70%  { transform: translateX(50%) scale(1.3);  opacity: 0.2;  filter: blur(100px); }
+    100% { transform: translateX(50%) scale(1.0);  opacity: 0.45; filter: blur(70px); }
 }
 
 @keyframes starsPulse {
-    0% { opacity: 0.3; }
-    50% { opacity: 0.7; }
-    100% { opacity: 0.4; }
+    0%   { opacity: 0.25; }
+    50%  { opacity: 0.65; }
+    100% { opacity: 0.3;  }
 }
 
 
