@@ -1485,11 +1485,12 @@ function openRankingModal(currentUser) {
     const modal = document.getElementById('ranking-modal');
     modal.classList.remove('hidden');
 
-    // 스테이지 선택 드롭다운 채우기 (1~현재 스테이지)
+    // 스테이지 선택 드롭다운 채우기 (최소 10단계 또는 유저의 maxStage/해당 최고단계)
     const select = document.getElementById('ranking-stage-select');
-    const currentStage = window.gameApp ? window.gameApp.stage : 1;
+    const userMaxStage = (window.gameApp && window.gameApp.maxStage) ? window.gameApp.maxStage : 1;
+    const maxSelectable = Math.max(userMaxStage, 10);
     select.innerHTML = '';
-    for (let i = 1; i <= Math.max(currentStage, 10); i++) {
+    for (let i = 1; i <= maxSelectable; i++) {
         const opt = document.createElement('option');
         opt.value = i;
         opt.textContent = `STAGE ${i}`;
