@@ -1481,14 +1481,45 @@ window.addEventListener('DOMContentLoaded', async () => {
 // ============================================================
 
 // 랭킹 모달 열기 + 최고 스테이지 탭 기본 로드
-function openRankingModal(currentUser) {
+async function openRankingModal(currentUser) {
     const modal = document.getElementById('ranking-modal');
     modal.classList.remove('hidden');
 
-    // 스테이지 선택 드롭다운 채우기 (최소 10단계 또는 유저의 maxStage/해당 최고단계)
     const select = document.getElementById('ranking-stage-select');
+    select.innerHTML = '<option>불러오는 중...</option>';
+
+    // 유저 자신의 maxStage
     const userMaxStage = (window.gameApp && window.gameApp.maxStage) ? window.gameApp.maxStage : 1;
-    const maxSelectable = Math.max(userMaxStage, 10);
+    let globalMaxStage = userMaxStage;
+
+    try {
+        // 🌟 1. player_settings 테이블에서 전체 플레이어 중 최고 max_stage 조회
+        const { data: settingsData } = await sbClient
+            .from('player_settings')
+            .select('max_stage')
+            .order('max_stage', { ascending: false })
+            .limit(1);
+
+        if (settingsData && settingsData.length > 0 && settingsData[0].max_stage) {
+            globalMaxStage = Math.max(globalMaxStage, settingsData[0].max_stage);
+        }
+
+        // 🌟 2. stage_records 테이블에서 등록된 최고 스테이지 번호 조회
+        const { data: recordsData } = await sbClient
+            .from('stage_records')
+            .select('stage')
+            .order('stage', { ascending: false })
+            .limit(1);
+
+        if (recordsData && recordsData.length > 0 && recordsData[0].stage) {
+            globalMaxStage = Math.max(globalMaxStage, recordsData[0].stage);
+        }
+    } catch (e) {
+        console.warn('전체 최고 스테이지 조회 에러:', e);
+    }
+
+    // 최소 10단계, 또는 전체 플레이어 및 내 기록 중 가장 높은 스테이지까지 드롭다운 생성
+    const maxSelectable = Math.max(globalMaxStage, 10);
     select.innerHTML = '';
     for (let i = 1; i <= maxSelectable; i++) {
         const opt = document.createElement('option');
