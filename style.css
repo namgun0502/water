@@ -914,10 +914,24 @@ html, body {
     animation: auroraGlow2 11s ease-in-out infinite alternate-reverse;
 }
 
+/* 🌟 로그인 화면 배경 그림 레이어 (SVG) */
+.auth-bg-scenery {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+.auth-bg-scenery svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
 /* 로그인 카드 (프리미엄 글래스모피즘 + 세련된 테두리 글로우) */
 .auth-card {
     position: relative;
-    z-index: 1;
+    z-index: 2;
     width: 100%;
     max-width: 390px;
     background: rgba(30, 41, 59, 0.65);
@@ -934,32 +948,10 @@ html, body {
     animation: modalPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* 로고 & 타이틀 */
+/* 타이틀 영역 */
 .auth-title-area {
     text-align: center;
-}
-.auth-logo-wrapper {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 72px;
-    height: 72px;
-    border-radius: 22px;
-    background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(168, 85, 247, 0.2));
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3), inset 0 0 15px rgba(255, 255, 255, 0.2);
-    margin-bottom: 12px;
-    animation: pulseLogo 3s ease-in-out infinite alternate;
-}
-.auth-logo-img {
-    width: 48px;
-    height: 48px;
-    object-fit: contain;
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
-}
-@keyframes pulseLogo {
-    0% { transform: scale(1); box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3); }
-    100% { transform: scale(1.05); box-shadow: 0 14px 30px rgba(168, 85, 247, 0.5); }
+    padding: 6px 0;
 }
 
 .auth-title {

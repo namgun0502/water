@@ -25,16 +25,83 @@
     <!-- 게임 시작 전에 이 화면이 먼저 표시됩니다.                   -->
     <!-- ======================================================= -->
     <div id="auth-screen" class="auth-screen">
-        <!-- 배경 빛 효과 (게임과 동일한 분위기) -->
+        <!-- 배경 빛 효과 및 일러스트 그림 레이어 -->
         <div class="auth-bg-glow auth-glow-1"></div>
         <div class="auth-bg-glow auth-glow-2"></div>
+        
+        <!-- 🌟 로그인 화면 배경 그림 레이어 (시험관 병, 색깔 물방울, 은하수 별빛 일러스트) -->
+        <div class="auth-bg-scenery">
+            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 800" preserveAspectRatio="xMidYMid slice">
+                <!-- 배경 은하수 별빛 파티클 -->
+                <circle cx="60" cy="120" r="2.5" fill="#e0e7ff" opacity="0.6"/>
+                <circle cx="120" cy="80" r="1.5" fill="#ffffff" opacity="0.8"/>
+                <circle cx="220" cy="140" r="2" fill="#c084fc" opacity="0.7"/>
+                <circle cx="380" cy="90" r="3" fill="#38bdf8" opacity="0.6"/>
+                <circle cx="440" cy="150" r="1.8" fill="#f472b6" opacity="0.7"/>
+                <circle cx="90" cy="350" r="2.2" fill="#38bdf8" opacity="0.5"/>
+                <circle cx="420" cy="400" r="2.5" fill="#a78bfa" opacity="0.6"/>
+                <circle cx="50" cy="620" r="2" fill="#f472b6" opacity="0.6"/>
+                <circle cx="450" cy="680" r="3" fill="#38bdf8" opacity="0.5"/>
+                
+                <!-- 🌟 왼쪽 상단 대형 고품격 시험관 퍼즐 일러스트 1 -->
+                <g transform="translate(40, 90) rotate(-15)" opacity="0.25">
+                    <!-- 유리병 틀 -->
+                    <rect x="0" y="0" width="46" height="150" rx="20" fill="none" stroke="#38bdf8" stroke-width="3"/>
+                    <rect x="-4" y="-4" width="54" height="8" rx="4" fill="#38bdf8"/>
+                    <!-- 4단계 색상 물 레이어 -->
+                    <path d="M3,110 L43,110 Q43,147 23,147 Q3,147 3,110Z" fill="#ff2a55"/>
+                    <rect x="3" y="75" width="40" height="35" fill="#ff8c00"/>
+                    <rect x="3" y="40" width="40" height="35" fill="#ffe600"/>
+                    <path d="M3,10 L43,10 L43,40 L3,40 Z" fill="#00e676"/>
+                </g>
+
+                <!-- 🌟 오른쪽 상단 대형 고품격 시험관 퍼즐 일러스트 2 -->
+                <g transform="translate(390, 70) rotate(18)" opacity="0.25">
+                    <rect x="0" y="0" width="46" height="150" rx="20" fill="none" stroke="#c084fc" stroke-width="3"/>
+                    <rect x="-4" y="-4" width="54" height="8" rx="4" fill="#c084fc"/>
+                    <path d="M3,110 L43,110 Q43,147 23,147 Q3,147 3,110Z" fill="#1565c0"/>
+                    <rect x="3" y="75" width="40" height="35" fill="#aa00ff"/>
+                    <rect x="3" y="40" width="40" height="35" fill="#ff4081"/>
+                    <rect x="3" y="10" width="40" height="30" fill="#00e5ff"/>
+                </g>
+
+                <!-- 🌟 왼쪽 하단 시험관 일러스트 3 -->
+                <g transform="translate(30, 580) rotate(22)" opacity="0.22">
+                    <rect x="0" y="0" width="42" height="140" rx="18" fill="none" stroke="#f472b6" stroke-width="3"/>
+                    <rect x="-4" y="-4" width="50" height="8" rx="4" fill="#f472b6"/>
+                    <path d="M3,100 L39,100 Q39,137 21,137 Q3,137 3,100Z" fill="#aa00ff"/>
+                    <rect x="3" y="68" width="36" height="32" fill="#00e5ff"/>
+                    <rect x="3" y="36" width="36" height="32" fill="#ff8c00"/>
+                </g>
+
+                <!-- 🌟 오른쪽 하단 시험관 일러스트 4 -->
+                <g transform="translate(410, 600) rotate(-20)" opacity="0.22">
+                    <rect x="0" y="0" width="42" height="140" rx="18" fill="none" stroke="#34d399" stroke-width="3"/>
+                    <rect x="-4" y="-4" width="50" height="8" rx="4" fill="#34d399"/>
+                    <path d="M3,100 L39,100 Q39,137 21,137 Q3,137 3,100Z" fill="#00e676"/>
+                    <rect x="3" y="68" width="36" height="32" fill="#ffe600"/>
+                    <rect x="3" y="36" width="36" height="32" fill="#ff2a55"/>
+                </g>
+
+                <!-- 🌟 공중에 떠다니는 색깔 물방울 (Water Drops) -->
+                <!-- 빨간 물방울 -->
+                <path d="M120,280 Q130,260 140,280 Q150,300 130,305 Q110,300 120,280Z" fill="#ff2a55" opacity="0.35"/>
+                <!-- 파란 물방울 -->
+                <path d="M360,320 Q370,300 380,320 Q390,340 370,345 Q350,340 360,320Z" fill="#38bdf8" opacity="0.4"/>
+                <!-- 보라 물방울 -->
+                <path d="M80,480 Q90,465 100,480 Q110,495 95,500 Q80,495 80,480Z" fill="#c084fc" opacity="0.35"/>
+                <!-- 주황 물방울 -->
+                <path d="M390,520 Q400,505 410,520 Q420,535 405,540 Q390,535 390,520Z" fill="#ff8c00" opacity="0.35"/>
+
+                <!-- 은은하게 흐르는 마법 웨이브 파동 라인 -->
+                <path d="M0,250 Q120,210 250,260 Q380,310 500,240" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6,6" opacity="0.25"/>
+                <path d="M0,550 Q130,590 260,540 Q390,490 500,560" fill="none" stroke="#c084fc" stroke-width="2" stroke-dasharray="6,6" opacity="0.2"/>
+            </svg>
+        </div>
 
         <div class="auth-card">
-            <!-- 타이틀 -->
+            <!-- 타이틀 (로고 뱃지 제거 및 타이틀 서체 강조) -->
             <div class="auth-title-area">
-                <div class="auth-logo-wrapper">
-                    <img src="favicon.png" alt="Water Sort Logo" class="auth-logo-img">
-                </div>
                 <h1 class="auth-title">Water Sort</h1>
                 <p class="auth-subtitle">✨ 힐링 컬러 물 퍼즐 게임 ✨</p>
             </div>
