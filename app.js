@@ -1020,21 +1020,74 @@ class WaterSortGame {
         window.addEventListener('click', unlockAudio);
         window.addEventListener('touchstart', unlockAudio);
 
-        // 사운드 설정 모달 열기/닫기
+        // 사운드/게임 설정 모달 열기/닫기
         document.getElementById('btn-sound-settings').addEventListener('click', () => {
             soundEngine.init();
-            // 스테이지 선택 드롭다운을 1 ~ maxStage 범위로 채우기
-            const sel = document.getElementById('stage-select');
-            sel.innerHTML = '';
-            for (let i = 1; i <= this.maxStage; i++) {
-                const opt = document.createElement('option');
-                opt.value = i;
-                opt.textContent = `STAGE ${i}`;
-                if (i === this.stage) opt.selected = true;
-                sel.appendChild(opt);
+
+            // 최고 기록 텍스트 및 입력창 범위 세팅
+            const maxNumEl = document.getElementById('settings-max-num');
+            const inputEl = document.getElementById('settings-stage-input');
+            const hintEl = document.getElementById('settings-stage-hint');
+
+            if (maxNumEl) maxNumEl.textContent = this.maxStage;
+            if (inputEl) {
+                inputEl.setAttribute('max', this.maxStage);
+                inputEl.value = this.stage; // 현재 진행 중인 스테이지 기본 채움
             }
+            if (hintEl) {
+                hintEl.textContent = `🎯 1단계부터 ${this.maxStage}단계까지 지정할 수 있습니다.`;
+                hintEl.style.color = '';
+            }
+
             this.soundModal.classList.remove('hidden');
         });
+
+        // 1. 설정 모달: 최고 기록으로 이동 버튼
+        const btnMaxStage = document.getElementById('btn-settings-max-stage');
+        if (btnMaxStage) {
+            btnMaxStage.onclick = () => {
+                soundEngine.playPop();
+                this.soundModal.classList.add('hidden');
+                this.stage = this.maxStage;
+                this.saveProgress();
+                this.startStage(this.stage);
+            };
+        }
+
+        // 2. 설정 모달: 직접 번호 입력으로 이동 버튼
+        const btnStageGo = document.getElementById('btn-settings-stage-go');
+        if (btnStageGo) {
+            btnStageGo.onclick = () => {
+                const inputEl = document.getElementById('settings-stage-input');
+                const hintEl = document.getElementById('settings-stage-hint');
+                let entered = parseInt(inputEl.value, 10);
+
+                if (isNaN(entered) || entered < 1) {
+                    if (hintEl) {
+                        hintEl.textContent = `⚠️ 1 이상의 올바른 숫자를 입력해 주세요.`;
+                        hintEl.style.color = '#ff5964';
+                    }
+                    return;
+                }
+
+                // 🌟 최고 기록(maxStage) 초과 숫자는 입력해도 이동 불가!
+                if (entered > this.maxStage) {
+                    if (hintEl) {
+                        hintEl.textContent = `🚫 최고 기록(${this.maxStage}단계)을 초과한 스테이지로는 이동할 수 없습니다!`;
+                        hintEl.style.color = '#ff5964';
+                    }
+                    inputEl.value = this.maxStage; // 최대 기록으로 즉시 보정
+                    return;
+                }
+
+                soundEngine.playPop();
+                this.soundModal.classList.add('hidden');
+                this.stage = entered;
+                this.saveProgress();
+                this.startStage(this.stage);
+            };
+        }
+
         document.getElementById('btn-close-sound').addEventListener('click', () => {
             this.soundModal.classList.add('hidden');
             this.saveProgress(); // 모달 닫을 때 설정 자동 저장

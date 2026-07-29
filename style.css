@@ -658,6 +658,25 @@ html, body {
     white-space: nowrap;
 }
 
+/* 설정 모달 전용 스테이지 박스 */
+.stage-setting-box {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.setting-stage-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 6px;
+}
+.continue-btn.small {
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    border-radius: 12px;
+}
+
+
 
 .win-card {
     text-align: center;

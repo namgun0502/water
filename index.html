@@ -245,15 +245,29 @@
                         <input type="range" id="sfx-volume" class="custom-range" min="0" max="100" value="80">
                     </div>
 
-                    <!-- 스테이지 선택 드롭다운 (클리어한 스테이지 중에서 선택) -->
-                    <div class="setting-group">
+                    <!-- 스테이지 선택 (최고 기록 이동 + 직접 번호 입력) -->
+                    <div class="setting-group stage-setting-box">
                         <label class="setting-label">
-                            <i class="fa-solid fa-list-ol"></i> 스테이지 선택
+                            <i class="fa-solid fa-flag-checkered"></i> 스테이지 이동
                         </label>
-                        <select id="stage-select" class="custom-select">
-                            <!-- JavaScript에서 1 ~ maxStage 범위로 동적 생성 -->
-                        </select>
-                        <p class="stage-select-hint">🎯 클리어한 스테이지 중 원하는 단계를 선택하세요!</p>
+                        
+                        <div class="setting-stage-actions">
+                            <!-- 1. 최고 기록으로 이동 버튼 -->
+                            <button id="btn-settings-max-stage" class="continue-btn primary small">
+                                <i class="fa-solid fa-trophy"></i>
+                                <span>최고 기록(<span id="settings-max-num">1</span>단계)으로 이동</span>
+                            </button>
+
+                            <!-- 2. 숫자 직접 입력 이동 -->
+                            <div class="stage-input-row">
+                                <input type="number" id="settings-stage-input" min="1" max="1" value="1" placeholder="번호 입력">
+                                <button id="btn-settings-stage-go" class="continue-btn secondary small">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <span>이동</span>
+                                </button>
+                            </div>
+                        </div>
+                        <p id="settings-stage-hint" class="stage-select-hint">🎯 1단계부터 최고 기록 단계까지만 이동 가능합니다.</p>
                     </div>
                 </div>
             </div>
