@@ -126,6 +126,10 @@
                 <span id="stage-number" class="stage-num">1</span>
             </div>
             <div class="header-right">
+                <!-- 랭킹 버튼 -->
+                <button id="btn-ranking" class="icon-btn" aria-label="랭킹" title="랭킹 보기">
+                    <i class="fa-solid fa-trophy"></i>
+                </button>
                 <!-- 로그아웃 버튼 -->
                 <button id="btn-logout" class="icon-btn" aria-label="로그아웃" title="로그아웃">
                     <i class="fa-solid fa-right-from-bracket"></i>
@@ -221,6 +225,14 @@
                         </div>
                         <input type="range" id="sfx-volume" class="custom-range" min="0" max="100" value="80">
                     </div>
+
+                    <!-- 처음부터 다시 시작 버튼 -->
+                    <div class="setting-group">
+                        <button id="btn-reset-game" class="reset-game-btn">
+                            <i class="fa-solid fa-rotate-left"></i>
+                            <span>🔄 처음부터 다시 시작 (1단계)</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -270,6 +282,45 @@
                     <div class="guide-item">
                         <span class="guide-num">5</span>
                         <p>모든 병이 한 가지 색상으로만 정리되면 성공입니다! 🌟</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🏆 랭킹 모달 -->
+        <div id="ranking-modal" class="modal-backdrop hidden">
+            <div class="modal-card ranking-card">
+                <div class="modal-header">
+                    <h3>🏆 명예의 전당</h3>
+                    <button id="btn-close-ranking" class="close-btn"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <!-- 랭킹 탭 버튼 -->
+                <div class="ranking-tabs">
+                    <button class="ranking-tab active" id="tab-top-stage" onclick="switchRankingTab('top-stage')">
+                        🌟 최고 스테이지
+                    </button>
+                    <button class="ranking-tab" id="tab-best-moves" onclick="switchRankingTab('best-moves')">
+                        ⚡ 최소 움직임
+                    </button>
+                </div>
+
+                <!-- 탭 1: 최고 스테이지 랭킹 -->
+                <div id="ranking-top-stage" class="ranking-panel">
+                    <div id="top-stage-list" class="ranking-list">
+                        <div class="ranking-loading">📡 랭킹 불러오는 중...</div>
+                    </div>
+                </div>
+
+                <!-- 탭 2: 스테이지별 최소 움직임 랭킹 -->
+                <div id="ranking-best-moves" class="ranking-panel hidden">
+                    <div class="ranking-stage-selector">
+                        <label class="setting-label">스테이지 선택</label>
+                        <select id="ranking-stage-select" class="custom-select" onchange="loadBestMovesRanking()">
+                        </select>
+                    </div>
+                    <div id="best-moves-list" class="ranking-list">
+                        <div class="ranking-loading">스테이지를 선택해 주세요.</div>
                     </div>
                 </div>
             </div>

@@ -682,6 +682,7 @@ class WaterSortGame {
         this.history     = [];
         this.bonusBottlesCount = 1;
         this.isAnimating = false;
+        this.moveCount   = 0; // 현재 스테이지에서의 물 줄기 횟수 (=움직임 수)
         this.currentBgTheme = (settings && settings.bg_theme) ? settings.bg_theme : 'deep-space';
 
         // DOM 요소
@@ -823,6 +824,31 @@ class WaterSortGame {
             this.startStage(this.stage);
         });
 
+        // 처음부터 다시 시작 버튼 (설정 모달 안)
+        document.getElementById('btn-reset-game').addEventListener('click', async () => {
+            const confirmed = confirm('⚠️ 정말 1단계부터 다시 시작하시겠습니까?\n현재 진행 기록이 초기화됩니다.');
+            if (!confirmed) return;
+            this.soundModal.classList.add('hidden');
+            this.stage = 1;
+            this.moveCount = 0;
+            await this.playerData.save({
+                stage: 1,
+                bg_theme: this.currentBgTheme,
+                bgm_track: this.bgmSelect ? this.bgmSelect.value : 'lofi',
+                bgm_volume: this.bgmVolumeSlider ? parseInt(this.bgmVolumeSlider.value, 10) : 60,
+                sfx_volume: this.sfxVolumeSlider ? parseInt(this.sfxVolumeSlider.value, 10) : 80
+            });
+            this.startStage(1);
+        });
+
+        // 랭킹 모달 열기
+        document.getElementById('btn-ranking').addEventListener('click', () => {
+            openRankingModal(this.user);
+        });
+        document.getElementById('btn-close-ranking').addEventListener('click', () => {
+            document.getElementById('ranking-modal').classList.add('hidden');
+        });
+
         // 🌟 배경 바깥 영역 터치/클릭 시 병 선택 취소 (Deselect)
         this.bottlesContainer.parentElement.addEventListener('click', (e) => {
             if (!e.target.closest('.bottle-wrapper') && this.selectedBottleIdx !== null && !this.isAnimating) {
@@ -839,6 +865,7 @@ class WaterSortGame {
         this.selectedBottleIdx = null;
         this.history = [];
         this.isAnimating = false;
+        this.moveCount = 0; // 스테이지 시작 시 움직임 횟수 리셋
 
         // 🌟 스테이지 난이도 공식: 1~2단계 3색 -> 최대 17색 (+ 기본 빈 병 3개 = 총 20개 병)
         const colorCount = Math.min(3 + Math.floor((stageNum - 1) / 2), 17);
@@ -1011,6 +1038,7 @@ class WaterSortGame {
                 toBottle.push(pourColor);
             }
 
+            this.moveCount++; // 물을 한 번 부을 때마다 움직임 횟수 +1
             this.selectedBottleIdx = null;
             this.render();
 
@@ -1052,11 +1080,43 @@ class WaterSortGame {
                     origin: { y: 0.6 }
                 });
             }
-            // 🌟 승리하자마자 실시간으로 다음 스테이지 데이터 Supabase DB에 저장
+            // 승리 시 스테이지 저장 + stage_records 최소 움직임 업데이트
             this.saveProgress();
+            this.saveStageRecord(this.stage, this.moveCount);
             setTimeout(() => {
                 this.winModal.classList.remove('hidden');
             }, 400);
+        }
+    }
+
+    // 스테이지 최소 움직임 기록을 stage_records 테이블에 저장 (더 적은 움직임일 때만 갱신)
+    async saveStageRecord(stage, moves) {
+        if (!this.user) return;
+        const nickname = (this.playerData && this.playerData.nickname)
+            ? this.playerData.nickname
+            : (this.user.email ? this.user.email.split('@')[0] : '플레이어');
+
+        try {
+            // 기존 기록 조회
+            const { data: existing } = await sbClient
+                .from('stage_records')
+                .select('moves')
+                .eq('user_id', this.user.id)
+                .eq('stage', stage)
+                .single();
+
+            // 기존 기록이 없거나, 현재 움직임이 더 적으면 갱신
+            if (!existing || moves < existing.moves) {
+                await sbClient.from('stage_records').upsert({
+                    user_id: this.user.id,
+                    nickname: nickname,
+                    stage: stage,
+                    moves: moves,
+                    cleared_at: new Date().toISOString()
+                }, { onConflict: 'user_id,stage' });
+            }
+        } catch (e) {
+            console.warn('stage_records 저장 오류:', e);
         }
     }
 
@@ -1090,3 +1150,139 @@ window.addEventListener('DOMContentLoaded', async () => {
         }
     }
 });
+
+// ============================================================
+// 🏆 랭킹 (리더보드) 전역 함수
+// ============================================================
+
+// 랭킹 모달 열기 + 최고 스테이지 탭 기본 로드
+function openRankingModal(currentUser) {
+    const modal = document.getElementById('ranking-modal');
+    modal.classList.remove('hidden');
+
+    // 스테이지 선택 드롭다운 채우기 (1~현재 스테이지)
+    const select = document.getElementById('ranking-stage-select');
+    const currentStage = window.gameApp ? window.gameApp.stage : 1;
+    select.innerHTML = '';
+    for (let i = 1; i <= Math.max(currentStage, 10); i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `STAGE ${i}`;
+        select.appendChild(opt);
+    }
+
+    // 기본 탭 활성화 및 데이터 로드
+    switchRankingTab('top-stage');
+    loadTopStageRanking(currentUser);
+}
+
+// 랭킹 탭 전환
+function switchRankingTab(tab) {
+    const topPanel = document.getElementById('ranking-top-stage');
+    const movesPanel = document.getElementById('ranking-best-moves');
+    const tabTop = document.getElementById('tab-top-stage');
+    const tabMoves = document.getElementById('tab-best-moves');
+
+    if (tab === 'top-stage') {
+        topPanel.classList.remove('hidden');
+        movesPanel.classList.add('hidden');
+        tabTop.classList.add('active');
+        tabMoves.classList.remove('active');
+        const user = window.gameApp ? window.gameApp.user : null;
+        loadTopStageRanking(user);
+    } else {
+        topPanel.classList.add('hidden');
+        movesPanel.classList.remove('hidden');
+        tabTop.classList.remove('active');
+        tabMoves.classList.add('active');
+        loadBestMovesRanking();
+    }
+}
+
+// 최고 스테이지 랭킹 로드 (player_settings 기준)
+async function loadTopStageRanking(currentUser) {
+    const list = document.getElementById('top-stage-list');
+    list.innerHTML = '<div class="ranking-loading">📡 랭킹 불러오는 중...</div>';
+
+    try {
+        const { data, error } = await sbClient
+            .from('player_settings')
+            .select('nickname, stage, id')
+            .order('stage', { ascending: false })
+            .limit(10);
+
+        if (error || !data || data.length === 0) {
+            list.innerHTML = '<div class="ranking-loading">아직 랭킹 데이터가 없습니다.</div>';
+            return;
+        }
+
+        const medals = ['🥇', '🥈', '🥉'];
+        list.innerHTML = data.map((row, idx) => {
+            const rankClass = idx < 3 ? `rank-${idx + 1}` : '';
+            const badge = idx < 3 ? medals[idx] : `${idx + 1}`;
+            const isMe = currentUser && row.id === currentUser.id;
+            return `
+                <div class="ranking-item ${rankClass}">
+                    <div class="rank-badge">${badge}</div>
+                    <div class="rank-info">
+                        <div class="rank-nickname">
+                            ${row.nickname || '플레이어'}
+                            ${isMe ? '<span class="rank-me">나</span>' : ''}
+                        </div>
+                        <div class="rank-detail">최고 기록</div>
+                    </div>
+                    <div class="rank-value">STAGE ${row.stage}</div>
+                </div>`;
+        }).join('');
+    } catch (e) {
+        list.innerHTML = '<div class="ranking-loading">⚠️ 랭킹을 불러오지 못했습니다.</div>';
+        console.error('Top Stage 랭킹 조회 오류:', e);
+    }
+}
+
+// 스테이지별 최소 움직임 랭킹 로드 (stage_records 기준)
+async function loadBestMovesRanking() {
+    const select = document.getElementById('ranking-stage-select');
+    const stage = parseInt(select.value, 10);
+    const list = document.getElementById('best-moves-list');
+    const currentUser = window.gameApp ? window.gameApp.user : null;
+
+    list.innerHTML = '<div class="ranking-loading">📡 랭킹 불러오는 중...</div>';
+
+    try {
+        const { data, error } = await sbClient
+            .from('stage_records')
+            .select('nickname, moves, user_id, cleared_at')
+            .eq('stage', stage)
+            .order('moves', { ascending: true })
+            .limit(10);
+
+        if (error || !data || data.length === 0) {
+            list.innerHTML = `<div class="ranking-loading">아직 STAGE ${stage} 기록이 없습니다.<br>첫 번째 도전자가 되어보세요! 🚀</div>`;
+            return;
+        }
+
+        const medals = ['🥇', '🥈', '🥉'];
+        list.innerHTML = data.map((row, idx) => {
+            const rankClass = idx < 3 ? `rank-${idx + 1}` : '';
+            const badge = idx < 3 ? medals[idx] : `${idx + 1}`;
+            const isMe = currentUser && row.user_id === currentUser.id;
+            const date = row.cleared_at ? new Date(row.cleared_at).toLocaleDateString('ko-KR') : '';
+            return `
+                <div class="ranking-item ${rankClass}">
+                    <div class="rank-badge">${badge}</div>
+                    <div class="rank-info">
+                        <div class="rank-nickname">
+                            ${row.nickname || '플레이어'}
+                            ${isMe ? '<span class="rank-me">나</span>' : ''}
+                        </div>
+                        <div class="rank-detail">${date} 클리어</div>
+                    </div>
+                    <div class="rank-value">${row.moves}회</div>
+                </div>`;
+        }).join('');
+    } catch (e) {
+        list.innerHTML = '<div class="ranking-loading">⚠️ 랭킹을 불러오지 못했습니다.</div>';
+        console.error('Best Moves 랭킹 조회 오류:', e);
+    }
+}
