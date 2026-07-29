@@ -1113,7 +1113,7 @@ class WaterSortGame {
 
             await new Promise(res => setTimeout(res, 200));
 
-            // 🌟 한 색상으로 가득 찬 물병(완색 병) 자동 검출 후 왼쪽 아래 보관함으로 열외 연출
+            // 🌟 한 색상으로 가득 찬 물병(완색 병) 자동 검출 후 메인 보드에서 완전히 제거하고 왼쪽 아래 보관함으로 열외 연출
             for (let i = 0; i < this.bottles.length; i++) {
                 const b = this.bottles[i];
                 if (b.length === BOTTLE_CAPACITY && b.every(c => c === b[0])) {
@@ -1122,10 +1122,11 @@ class WaterSortGame {
                     if (typeof confetti === 'function') {
                         confetti({ particleCount: 25, spread: 40, origin: { x: 0.2, y: 0.8 } });
                     }
-                    // 완색 병의 색상을 저장하고 해당 병을 비움 (빈 병으로 만듦)
+                    // 완색 병의 색상을 보관함에 기록하고 메인 병 배열에서 아예 제거 (병 자체가 빠짐)
                     const completedColor = b[0];
                     this.completedBottles.push(completedColor);
-                    this.bottles[i] = []; // 비움
+                    this.bottles.splice(i, 1);
+                    i--; // splice로 인덱스가 당겨졌으므로 재조정
                     this.render();
                     await new Promise(res => setTimeout(res, 250));
                 }
