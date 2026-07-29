@@ -927,6 +927,7 @@ class WaterSortGame {
         this.initialBottles = this.bottles.map(b => [...b]);
 
         this.render();
+        this.renderAllCompletedBottles();
     }
 
     // 🌟 현재 스테이지 재시작 (원래 처음 생성되었던 배치 그대로 복원)
@@ -940,34 +941,23 @@ class WaterSortGame {
         this.completedBottles = [];
         this.history = [];
         this.render();
+        this.renderAllCompletedBottles();
     }
 
     render() {
         this.bottlesContainer.innerHTML = '';
         this.bottlesContainer.className = 'bottles-container';
 
-        if (this.completedContainer) {
-            this.completedContainer.innerHTML = '';
-        }
-
-        // 🌟 1. 메인 보드 유리병 렌더링 (아직 완성되지 않은 병 및 빈 병)
+        // 🌟 1. 메인 보드 유리병 렌더링 (아직 남아있는 병들)
         this.bottles.forEach((bottle, bIdx) => {
-            const isCompleted = (bottle.length === BOTTLE_CAPACITY && bottle.every(c => c === bottle[0]));
-            
-            // 만약 완성된 병이라면 열외 목록으로 이동하지 않았을 때 처리
             const wrapper = document.createElement('div');
             wrapper.className = 'bottle-wrapper';
             if (this.selectedBottleIdx === bIdx) {
                 wrapper.classList.add('selected');
             }
-            if (isCompleted) {
-                wrapper.classList.add('completed');
-            }
 
             wrapper.addEventListener('click', (e) => {
                 e.stopPropagation();
-                // 이미 완성된 병은 클릭 불가능하도록 막음
-                if (isCompleted) return;
                 this.handleBottleClick(bIdx);
             });
 
@@ -988,35 +978,42 @@ class WaterSortGame {
             wrapper.appendChild(bottleEl);
             this.bottlesContainer.appendChild(wrapper);
         });
+    }
 
-        // 🌟 2. 화면 왼쪽 아래 완성 보관함(completed-container) 렌더링
-        if (this.completedContainer && this.completedBottles) {
-            const totalCount = this.completedBottles.length;
-            this.completedBottles.forEach((color, idx) => {
-                const wrapper = document.createElement('div');
-                // 방금 새로 들어온 마지막 병에만 popIn 애니메이션 적용, 기존 병은 정적 표시
-                const isNew = (idx === totalCount - 1);
-                wrapper.className = isNew ? 'bottle-wrapper completed newly-added' : 'bottle-wrapper completed';
+    // 🌟 완성 보관함 전체 동기화 (재시작 또는 undo 시에만 전체 갱신)
+    renderAllCompletedBottles() {
+        if (!this.completedContainer) return;
+        this.completedContainer.innerHTML = '';
+        if (!this.completedBottles) return;
 
-                const bottleEl = document.createElement('div');
-                bottleEl.className = 'bottle';
+        this.completedBottles.forEach(color => {
+            this.appendCompletedBottleDOM(color, false);
+        });
+    }
 
-                const rimEl = document.createElement('div');
-                rimEl.className = 'bottle-rim';
-                wrapper.appendChild(rimEl);
+    // 🌟 새로운 완색 병 1개를 보관함 DOM에 추가
+    appendCompletedBottleDOM(color, animate = true) {
+        if (!this.completedContainer) return;
 
-                // 4칸 모두 동일한 완색
-                for (let i = 0; i < BOTTLE_CAPACITY; i++) {
-                    const layer = document.createElement('div');
-                    layer.className = 'water-layer';
-                    layer.style.backgroundColor = color;
-                    bottleEl.appendChild(layer);
-                }
+        const wrapper = document.createElement('div');
+        wrapper.className = animate ? 'bottle-wrapper completed newly-added' : 'bottle-wrapper completed';
 
-                wrapper.appendChild(bottleEl);
-                this.completedContainer.appendChild(wrapper);
-            });
+        const bottleEl = document.createElement('div');
+        bottleEl.className = 'bottle';
+
+        const rimEl = document.createElement('div');
+        rimEl.className = 'bottle-rim';
+        wrapper.appendChild(rimEl);
+
+        for (let i = 0; i < BOTTLE_CAPACITY; i++) {
+            const layer = document.createElement('div');
+            layer.className = 'water-layer';
+            layer.style.backgroundColor = color;
+            bottleEl.appendChild(layer);
         }
+
+        wrapper.appendChild(bottleEl);
+        this.completedContainer.appendChild(wrapper);
     }
 
     // 유리병 터치/클릭 처리 (선택 해제 및 부어 담기)
@@ -1130,7 +1127,9 @@ class WaterSortGame {
                     this.completedBottles.push(completedColor);
                     this.bottles.splice(i, 1);
                     i--; // splice로 인덱스가 당겨졌으므로 재조정
-                    this.render();
+
+                    this.render(); // 메인 공간 갱신 (열외된 병 지움)
+                    this.appendCompletedBottleDOM(completedColor, true); // 🌟 신규 완색 병 1개만 보관함 DOM에 덧붙임!
                     await new Promise(res => setTimeout(res, 250));
                 }
             }
@@ -1143,6 +1142,7 @@ class WaterSortGame {
 
         this.checkWinCondition();
     }
+
 
 
     checkWinCondition() {
@@ -1230,7 +1230,9 @@ class WaterSortGame {
         this.completedBottles = lastState.completedBottles || [];
         this.selectedBottleIdx = null;
         this.render();
+        this.renderAllCompletedBottles();
     }
+
 
 }
 
