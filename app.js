@@ -4,7 +4,7 @@
  * ==========================================================================
  */
 
-// 1. 액체 색상 파렛트 정의 (시각적 구별이 뚜렷한 20가지 고대비 파스텔/네온 힐링 파렛트)
+// 1. 액체 색상 파렛트 정의 (시각적 구별이 뚜렷한 30가지 고대비 파스텔/네온 힐링 파렛트)
 const PALETTE = [
     '#FF2A55', // 1: Cherry Red (체리 레드)
     '#FF8C00', // 2: Mango Orange (망고 주황)
@@ -20,12 +20,23 @@ const PALETTE = [
     '#FF7043', // 12: Coral Tangerine (코랄 탠저린)
     '#004D40', // 13: Deep Teal (짙은 청록)
     '#4A148C', // 14: Plum Purple (플럼 퍼플)
-    '#D500F9', // 15: Magenta Rose (마젠타 로즈 - 신규)
-    '#827717', // 16: Sage Olive (세이지 올리브 - 신규)
-    '#BF360C', // 17: Deep Caramel (카라멜 브라운 - 신규)
-    '#1A237E', // 18: Midnight Navy (미드나잇 네이비 - 신규)
-    '#FFD600', // 19: Deep Bronze Gold (브론즈 골드 - 신규)
-    '#A7FFEB'  // 20: Cotton Mint (솜사탕 민트 - 신규)
+    '#D500F9', // 15: Magenta Rose (마젠타 로즈)
+    '#827717', // 16: Sage Olive (세이지 올리브)
+    '#BF360C', // 17: Deep Caramel (카라멜 브라운)
+    '#1A237E', // 18: Midnight Navy (미드나잇 네이비)
+    '#FFD600', // 19: Deep Bronze Gold (브론즈 골드)
+    '#A7FFEB', // 20: Cotton Mint (솜사탕 민트)
+    // 🌟 신규 추가 10가지 독창적 액체 색상 (21 ~ 30)
+    '#F48FB1', // 21: Orchid Lavender (오키드 라벤더)
+    '#00B0FF', // 22: Electric Azure (일렉트릭 아주르)
+    '#76FF03', // 23: Neon Chartreuse (네온 차트르즈)
+    '#FF6D00', // 24: Burnt Amber (번트 앰버)
+    '#C2185B', // 25: Crimson Ruby (크림슨 루비)
+    '#00E5FF', // 26: Ice Turquoise (아이스 터쿼이즈)
+    '#3F51B5', // 27: Royal Indigo (로열 인디고)
+    '#8D6E63', // 28: Hazelnut Latte (헤이즐넛 라떼)
+    '#69F0AE', // 29: Seafoam Foam (시폼 폼)
+    '#EC407A'  // 30: Flamingo Bloom (플라밍고 블룸)
 ];
 
 const BOTTLE_CAPACITY = 4;
@@ -873,8 +884,8 @@ class WaterSortGame {
         this.isAnimating = false;
         this.moveCount = 0; // 스테이지 시작 시 움직임 횟수 리셋
 
-        // 🌟 스테이지 난이도 공식: 1~2단계 3색 -> 최대 17색 (+ 기본 빈 병 3개 = 총 20개 병)
-        const colorCount = Math.min(3 + Math.floor((stageNum - 1) / 2), 17);
+        // 🌟 스테이지 난이도 공식: 1~2단계 3색 -> 최대 27색 (+ 기본 빈 병 3개 = 총 30개 병)
+        const colorCount = Math.min(3 + Math.floor((stageNum - 1) / 2), 27);
         const emptyBottleCount = 3; // 🌟 기본 제공 빈 병 3개
         const selectedColors = PALETTE.slice(0, colorCount);
 
