@@ -247,8 +247,13 @@ html, body {
     width: 26px;
     height: 84px;
     cursor: default;
+}
+
+/* 🌟 방금 막 완성되어 들어온 신규 병에만 등장 팝업 애니메이션 1회 부여 */
+.completed-container .bottle-wrapper.newly-added {
     animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
+
 .completed-container .bottle-rim {
     width: 30px;
     height: 5px;
@@ -260,6 +265,7 @@ html, body {
     70% { transform: scale(1.15); opacity: 1; }
     100% { transform: scale(1); opacity: 1; }
 }
+
 
 
 /* 유리병 자체 */

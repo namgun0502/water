@@ -991,9 +991,12 @@ class WaterSortGame {
 
         // 🌟 2. 화면 왼쪽 아래 완성 보관함(completed-container) 렌더링
         if (this.completedContainer && this.completedBottles) {
-            this.completedBottles.forEach(color => {
+            const totalCount = this.completedBottles.length;
+            this.completedBottles.forEach((color, idx) => {
                 const wrapper = document.createElement('div');
-                wrapper.className = 'bottle-wrapper completed';
+                // 방금 새로 들어온 마지막 병에만 popIn 애니메이션 적용, 기존 병은 정적 표시
+                const isNew = (idx === totalCount - 1);
+                wrapper.className = isNew ? 'bottle-wrapper completed newly-added' : 'bottle-wrapper completed';
 
                 const bottleEl = document.createElement('div');
                 bottleEl.className = 'bottle';
