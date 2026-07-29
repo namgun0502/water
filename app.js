@@ -1147,17 +1147,20 @@ class WaterSortGame {
             this.startStage(this.stage);
         });
 
-        // 스테이지 선택 드롭다운 이벤트 (1 ~ maxStage 까지 선택 가능)
-        document.getElementById('stage-select').addEventListener('change', (e) => {
-            const selected = parseInt(e.target.value, 10);
-            if (selected >= 1 && selected <= this.maxStage) {
-                this.stage = selected;
-                this.moveCount = 0;
-                this.soundModal.classList.add('hidden');
-                this.saveProgress();
-                this.startStage(this.stage);
-            }
-        });
+        // 스테이지 선택 드롭다운 이벤트 (요소가 존재하는 경우에만 안전하게 연결)
+        const stageSelectEl = document.getElementById('stage-select');
+        if (stageSelectEl) {
+            stageSelectEl.addEventListener('change', (e) => {
+                const selected = parseInt(e.target.value, 10);
+                if (selected >= 1 && selected <= this.maxStage) {
+                    this.stage = selected;
+                    this.moveCount = 0;
+                    this.soundModal.classList.add('hidden');
+                    this.saveProgress();
+                    this.startStage(this.stage);
+                }
+            });
+        }
 
         // 랭킹 모달 열기
         document.getElementById('btn-ranking').addEventListener('click', () => {
@@ -1248,7 +1251,12 @@ class WaterSortGame {
         if (this.isAnimating) return;
         soundEngine.playPop();
         
-        // 처음 배치 상태 그대로 원복
+        // 처음 배치 상태 그대로 원복 (만약 initialBottles가 준비 안 되어 있다면 다시 startStage 실행)
+        if (!this.initialBottles || this.initialBottles.length === 0) {
+            this.startStage(this.stage);
+            return;
+        }
+
         this.bottles = this.initialBottles.map(b => [...b]);
         this.selectedBottleIdx = null;
         this.completedBottles = [];
