@@ -759,7 +759,219 @@ class WaterSortGame {
         this.currentBgTheme = theme;
         this.appEl.setAttribute('data-theme', theme);
         if (this.bgThemeSelect) this.bgThemeSelect.value = theme;
+
+        // 🌟 배경 테마 연상 일러스트 SVG 레이어 업데이트
+        const scenery = document.getElementById('bg-scenery');
+        if (!scenery) return;
+
+        const scenes = {
+            // 🌌 우주: 행성, 유성, 별자리
+            'deep-space': `
+              <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 800" preserveAspectRatio="xMidYMid slice">
+                <!-- 큰 행성 -->
+                <circle cx="400" cy="160" r="70" fill="#4c1d95" opacity="0.5"/>
+                <circle cx="400" cy="160" r="70" fill="none" stroke="#7c3aed" stroke-width="3" opacity="0.4"/>
+                <!-- 행성 고리 -->
+                <ellipse cx="400" cy="175" rx="100" ry="18" fill="none" stroke="#a78bfa" stroke-width="2.5" opacity="0.4"/>
+                <!-- 작은 행성 -->
+                <circle cx="80" cy="300" r="35" fill="#1e3a5f" opacity="0.5"/>
+                <circle cx="80" cy="300" r="35" fill="none" stroke="#38bdf8" stroke-width="2" opacity="0.35"/>
+                <!-- 유성 1 -->
+                <line x1="50" y1="100" x2="160" y2="200" stroke="#e0e7ff" stroke-width="2" opacity="0.6" stroke-linecap="round"/>
+                <circle cx="50" cy="100" r="3" fill="#fff" opacity="0.8"/>
+                <!-- 유성 2 -->
+                <line x1="320" y1="50" x2="400" y2="110" stroke="#c4b5fd" stroke-width="1.5" opacity="0.5" stroke-linecap="round"/>
+                <circle cx="320" cy="50" r="2" fill="#fff" opacity="0.7"/>
+                <!-- 우주인 실루엣 (하단 중앙, 작게) -->
+                <ellipse cx="250" cy="760" rx="14" ry="18" fill="#1e1b4b" opacity="0.5"/>
+                <circle cx="250" cy="738" r="10" fill="#1e1b4b" opacity="0.5"/>
+                <line x1="236" y1="750" x2="220" y2="770" stroke="#1e1b4b" stroke-width="4" opacity="0.5" stroke-linecap="round"/>
+                <line x1="264" y1="750" x2="280" y2="770" stroke="#1e1b4b" stroke-width="4" opacity="0.5" stroke-linecap="round"/>
+                <!-- 별자리 선 -->
+                <line x1="140" y1="120" x2="180" y2="90" stroke="#c4b5fd" stroke-width="0.8" opacity="0.35"/>
+                <line x1="180" y1="90" x2="220" y2="130" stroke="#c4b5fd" stroke-width="0.8" opacity="0.35"/>
+                <circle cx="140" cy="120" r="2" fill="#fff" opacity="0.6"/>
+                <circle cx="180" cy="90" r="2.5" fill="#fff" opacity="0.7"/>
+                <circle cx="220" cy="130" r="2" fill="#fff" opacity="0.6"/>
+              </svg>`,
+
+            // 🌊 심해: 물고기, 해파리, 거품, 파도
+            'ocean-depths': `
+              <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 800" preserveAspectRatio="xMidYMid slice">
+                <!-- 파도 라인들 -->
+                <path d="M0,680 Q60,660 120,680 Q180,700 240,680 Q300,660 360,680 Q420,700 500,680" stroke="#38bdf8" stroke-width="2.5" fill="none" opacity="0.3"/>
+                <path d="M0,720 Q80,700 160,720 Q240,740 320,720 Q400,700 500,720" stroke="#7dd3fc" stroke-width="2" fill="none" opacity="0.2"/>
+                <!-- 해초 -->
+                <path d="M60,800 Q50,760 65,730 Q75,700 60,680" stroke="#059669" stroke-width="4" fill="none" opacity="0.5" stroke-linecap="round"/>
+                <path d="M440,800 Q455,755 440,720 Q425,690 445,660" stroke="#10b981" stroke-width="4" fill="none" opacity="0.45" stroke-linecap="round"/>
+                <path d="M200,800 Q190,770 205,745" stroke="#34d399" stroke-width="3" fill="none" opacity="0.4" stroke-linecap="round"/>
+                <!-- 물고기 1 -->
+                <path d="M120,300 Q160,285 180,300 Q160,315 120,300Z" fill="#0ea5e9" opacity="0.55"/>
+                <polygon points="118,300 100,288 100,312" fill="#0ea5e9" opacity="0.55"/>
+                <circle cx="172" cy="298" r="3" fill="#fff" opacity="0.7"/>
+                <!-- 물고기 2 (반대 방향) -->
+                <path d="M350,450 Q310,435 290,450 Q310,465 350,450Z" fill="#2dd4bf" opacity="0.5"/>
+                <polygon points="352,450 370,438 370,462" fill="#2dd4bf" opacity="0.5"/>
+                <circle cx="298" cy="448" r="2.5" fill="#fff" opacity="0.7"/>
+                <!-- 작은 물고기 떼 -->
+                <ellipse cx="250" cy="550" rx="10" ry="5" fill="#7dd3fc" opacity="0.45"/>
+                <ellipse cx="270" cy="540" rx="8" ry="4" fill="#7dd3fc" opacity="0.4"/>
+                <ellipse cx="230" cy="558" rx="9" ry="4.5" fill="#7dd3fc" opacity="0.4"/>
+                <!-- 해파리 -->
+                <path d="M380,200 Q400,180 420,200" stroke="#a5f3fc" stroke-width="2" fill="none" opacity="0.45"/>
+                <ellipse cx="400" cy="200" rx="20" ry="12" fill="#cffafe" opacity="0.2"/>
+                <line x1="390" y1="210" x2="385" y2="240" stroke="#a5f3fc" stroke-width="1.2" opacity="0.35"/>
+                <line x1="400" y1="212" x2="400" y2="245" stroke="#a5f3fc" stroke-width="1.2" opacity="0.35"/>
+                <line x1="410" y1="210" x2="415" y2="240" stroke="#a5f3fc" stroke-width="1.2" opacity="0.35"/>
+                <!-- 거품들 -->
+                <circle cx="80" cy="600" r="6" fill="none" stroke="#bae6fd" stroke-width="1.5" opacity="0.4"/>
+                <circle cx="95" cy="570" r="4" fill="none" stroke="#bae6fd" stroke-width="1.5" opacity="0.35"/>
+                <circle cx="420" cy="500" r="7" fill="none" stroke="#bae6fd" stroke-width="1.5" opacity="0.4"/>
+                <circle cx="435" cy="468" r="4.5" fill="none" stroke="#bae6fd" stroke-width="1.5" opacity="0.3"/>
+              </svg>`,
+
+            // 🌸 벚꽃: 나무 가지, 꽃잎
+            'cherry-blossom': `
+              <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 800" preserveAspectRatio="xMidYMid slice">
+                <!-- 왼쪽 나무 가지 -->
+                <path d="M-20,800 Q20,700 10,600 Q0,500 60,420" stroke="#7f1d1d" stroke-width="12" fill="none" opacity="0.55" stroke-linecap="round"/>
+                <path d="M10,600 Q60,560 100,520" stroke="#7f1d1d" stroke-width="8" fill="none" opacity="0.5" stroke-linecap="round"/>
+                <path d="M10,600 Q-20,550 -10,500" stroke="#7f1d1d" stroke-width="6" fill="none" opacity="0.45" stroke-linecap="round"/>
+                <path d="M60,420 Q110,380 130,330" stroke="#7f1d1d" stroke-width="6" fill="none" opacity="0.45" stroke-linecap="round"/>
+                <path d="M60,420 Q20,390 10,350" stroke="#7f1d1d" stroke-width="5" fill="none" opacity="0.4" stroke-linecap="round"/>
+                <!-- 오른쪽 나무 가지 -->
+                <path d="M520,800 Q480,680 490,560 Q500,470 440,390" stroke="#7f1d1d" stroke-width="10" fill="none" opacity="0.5" stroke-linecap="round"/>
+                <path d="M490,560 Q450,530 420,490" stroke="#7f1d1d" stroke-width="7" fill="none" opacity="0.45" stroke-linecap="round"/>
+                <!-- 꽃 군집 (왼쪽) -->
+                <circle cx="100" cy="520" r="22" fill="#fda4af" opacity="0.45"/>
+                <circle cx="130" cy="500" r="18" fill="#f9a8d4" opacity="0.4"/>
+                <circle cx="70" cy="510" r="16" fill="#fecdd3" opacity="0.4"/>
+                <circle cx="60" cy="430" r="20" fill="#fda4af" opacity="0.45"/>
+                <circle cx="90" cy="415" r="16" fill="#f9a8d4" opacity="0.4"/>
+                <!-- 꽃 군집 (오른쪽) -->
+                <circle cx="420" cy="490" r="20" fill="#fda4af" opacity="0.4"/>
+                <circle cx="445" cy="475" r="17" fill="#f9a8d4" opacity="0.38"/>
+                <!-- 떨어지는 꽃잎들 -->
+                <ellipse cx="180" cy="200" rx="7" ry="5" fill="#fda4af" opacity="0.55" transform="rotate(-30 180 200)"/>
+                <ellipse cx="300" cy="120" rx="6" ry="4" fill="#f9a8d4" opacity="0.5" transform="rotate(20 300 120)"/>
+                <ellipse cx="380" cy="250" rx="7" ry="4.5" fill="#fecdd3" opacity="0.5" transform="rotate(-15 380 250)"/>
+                <ellipse cx="240" cy="350" rx="6" ry="4" fill="#fda4af" opacity="0.45" transform="rotate(40 240 350)"/>
+                <ellipse cx="140" cy="320" rx="5" ry="3.5" fill="#f9a8d4" opacity="0.45" transform="rotate(-25 140 320)"/>
+                <ellipse cx="420" cy="180" rx="6.5" ry="4" fill="#fda4af" opacity="0.5" transform="rotate(10 420 180)"/>
+                <ellipse cx="80" cy="250" rx="5.5" ry="3.5" fill="#fecdd3" opacity="0.45" transform="rotate(-35 80 250)"/>
+              </svg>`,
+
+            // 🌿 숲: 나무 실루엣, 달, 반딧불
+            'forest-night': `
+              <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 800" preserveAspectRatio="xMidYMid slice">
+                <!-- 달 -->
+                <circle cx="370" cy="120" r="50" fill="#d9f99d" opacity="0.2"/>
+                <circle cx="388" cy="108" r="50" fill="#064e3b" opacity="0.2"/>
+                <!-- 달빛 후광 -->
+                <circle cx="370" cy="120" r="70" fill="none" stroke="#a3e635" stroke-width="1.5" opacity="0.15"/>
+                <!-- 나무들 실루엣 (하단) -->
+                <!-- 나무 1 (왼쪽 끝) -->
+                <polygon points="-20,800 30,600 80,800" fill="#022c22" opacity="0.7"/>
+                <polygon points="0,700 30,540 60,700" fill="#022c22" opacity="0.8"/>
+                <!-- 나무 2 -->
+                <polygon points="60,800 110,580 160,800" fill="#022c22" opacity="0.75"/>
+                <polygon points="80,700 110,520 140,700" fill="#022c22" opacity="0.85"/>
+                <!-- 나무 3 (중앙) -->
+                <polygon points="170,800 230,540 290,800" fill="#021a12" opacity="0.7"/>
+                <polygon points="195,700 230,480 265,700" fill="#021a12" opacity="0.8"/>
+                <!-- 나무 4 -->
+                <polygon points="300,800 355,570 410,800" fill="#022c22" opacity="0.75"/>
+                <polygon points="322,700 355,515 388,700" fill="#022c22" opacity="0.8"/>
+                <!-- 나무 5 (오른쪽) -->
+                <polygon points="400,800 450,600 500,800" fill="#021a12" opacity="0.7"/>
+                <polygon points="420,700 450,545 480,700" fill="#021a12" opacity="0.75"/>
+                <!-- 반딧불이들 -->
+                <circle cx="150" cy="500" r="3" fill="#86efac" opacity="0.85"/>
+                <circle cx="150" cy="500" r="8" fill="#4ade80" opacity="0.2"/>
+                <circle cx="320" cy="450" r="2.5" fill="#a3e635" opacity="0.8"/>
+                <circle cx="320" cy="450" r="7" fill="#4ade80" opacity="0.18"/>
+                <circle cx="80" cy="420" r="3" fill="#86efac" opacity="0.75"/>
+                <circle cx="80" cy="420" r="9" fill="#4ade80" opacity="0.15"/>
+                <circle cx="410" cy="480" r="2.5" fill="#a3e635" opacity="0.8"/>
+                <circle cx="410" cy="480" r="6" fill="#4ade80" opacity="0.18"/>
+                <circle cx="240" cy="420" r="3" fill="#86efac" opacity="0.7"/>
+                <!-- 올빼미 실루엣 (나무 위) -->
+                <ellipse cx="112" cy="572" rx="10" ry="12" fill="#011810" opacity="0.8"/>
+                <circle cx="112" cy="562" r="8" fill="#011810" opacity="0.8"/>
+                <polygon points="107,556 112,548 117,556" fill="#011810" opacity="0.8"/>
+                <circle cx="108" cy="561" r="2.5" fill="#a3e635" opacity="0.6"/>
+                <circle cx="116" cy="561" r="2.5" fill="#a3e635" opacity="0.6"/>
+              </svg>`,
+
+            // 🌅 노을: 태양, 산 실루엣, 새, 구름
+            'sunset-glow': `
+              <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 800" preserveAspectRatio="xMidYMid slice">
+                <!-- 태양 -->
+                <circle cx="250" cy="600" r="75" fill="#fbbf24" opacity="0.22"/>
+                <circle cx="250" cy="600" r="55" fill="#f97316" opacity="0.3"/>
+                <circle cx="250" cy="600" r="38" fill="#fb923c" opacity="0.4"/>
+                <!-- 태양 광선들 -->
+                <line x1="250" y1="525" x2="250" y2="510" stroke="#fbbf24" stroke-width="2.5" opacity="0.35"/>
+                <line x1="302" y1="548" x2="313" y2="538" stroke="#fbbf24" stroke-width="2.5" opacity="0.35"/>
+                <line x1="198" y1="548" x2="187" y2="538" stroke="#fbbf24" stroke-width="2.5" opacity="0.35"/>
+                <!-- 구름들 -->
+                <ellipse cx="100" cy="320" rx="55" ry="22" fill="#fed7aa" opacity="0.22"/>
+                <ellipse cx="140" cy="308" rx="40" ry="18" fill="#fdba74" opacity="0.2"/>
+                <ellipse cx="370" cy="280" rx="60" ry="24" fill="#fed7aa" opacity="0.2"/>
+                <ellipse cx="405" cy="268" rx="38" ry="17" fill="#fdba74" opacity="0.18"/>
+                <ellipse cx="200" cy="250" rx="45" ry="19" fill="#fed7aa" opacity="0.18"/>
+                <!-- 산/언덕 실루엣 -->
+                <path d="M0,800 L0,680 L80,530 L160,640 L260,480 L360,600 L440,510 L500,580 L500,800Z" fill="#1b0700" opacity="0.65"/>
+                <path d="M0,800 L0,730 L70,650 L150,710 L220,630 L300,700 L380,640 L460,700 L500,660 L500,800Z" fill="#2d0f00" opacity="0.55"/>
+                <!-- 새 실루엣들 (V자) -->
+                <path d="M90,200 Q100,190 110,200 Q120,190 130,200" stroke="#fb923c" stroke-width="2.2" fill="none" opacity="0.6" stroke-linecap="round"/>
+                <path d="M150,170 Q158,162 166,170 Q174,162 182,170" stroke="#f97316" stroke-width="2" fill="none" opacity="0.55" stroke-linecap="round"/>
+                <path d="M280,220 Q290,211 300,220 Q310,211 320,220" stroke="#fb923c" stroke-width="2.2" fill="none" opacity="0.5" stroke-linecap="round"/>
+                <path d="M340,190 Q348,182 356,190 Q364,182 372,190" stroke="#fbbf24" stroke-width="2" fill="none" opacity="0.5" stroke-linecap="round"/>
+                <path d="M380,155 Q386,148 392,155 Q398,148 404,155" stroke="#fb923c" stroke-width="1.8" fill="none" opacity="0.45" stroke-linecap="round"/>
+                <!-- 수평선 반사 빛 -->
+                <line x1="0" y1="620" x2="500" y2="620" stroke="#f97316" stroke-width="1.5" opacity="0.15"/>
+              </svg>`,
+
+            // 🍬 솜사탕: 구름, 별, 파스텔 하트, 무지개
+            'cotton-candy': `
+              <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 500 800" preserveAspectRatio="xMidYMid slice">
+                <!-- 파스텔 무지개 (상단) -->
+                <path d="M60,350 Q160,160 280,140 Q400,120 460,280" stroke="#f472b6" stroke-width="3" fill="none" opacity="0.18"/>
+                <path d="M80,370 Q170,185 280,165 Q390,145 440,300" stroke="#c084fc" stroke-width="3" fill="none" opacity="0.16"/>
+                <path d="M100,390 Q185,215 280,195 Q378,175 420,325" stroke="#60a5fa" stroke-width="3" fill="none" opacity="0.14"/>
+                <!-- 구름들 (큰) -->
+                <ellipse cx="110" cy="180" rx="65" ry="28" fill="#f5d0fe" opacity="0.28"/>
+                <ellipse cx="155" cy="163" rx="48" ry="22" fill="#e9d5ff" opacity="0.25"/>
+                <ellipse cx="70" cy="170" rx="38" ry="18" fill="#fce7f3" opacity="0.22"/>
+                <ellipse cx="380" cy="150" rx="60" ry="25" fill="#fce7f3" opacity="0.25"/>
+                <ellipse cx="420" cy="136" rx="44" ry="20" fill="#f5d0fe" opacity="0.22"/>
+                <!-- 구름들 (작은) -->
+                <ellipse cx="250" cy="100" rx="40" ry="17" fill="#e9d5ff" opacity="0.2"/>
+                <ellipse cx="270" cy="90" rx="28" ry="13" fill="#fce7f3" opacity="0.18"/>
+                <!-- 별들 -->
+                <text x="60" y="350" font-size="22" fill="#f472b6" opacity="0.5" text-anchor="middle">✦</text>
+                <text x="420" y="300" font-size="18" fill="#c084fc" opacity="0.5" text-anchor="middle">✦</text>
+                <text x="200" y="280" font-size="15" fill="#a78bfa" opacity="0.45" text-anchor="middle">✦</text>
+                <text x="350" y="400" font-size="20" fill="#f9a8d4" opacity="0.45" text-anchor="middle">✦</text>
+                <text x="130" y="420" font-size="16" fill="#c084fc" opacity="0.4" text-anchor="middle">✦</text>
+                <!-- 하트들 -->
+                <text x="310" y="200" font-size="22" fill="#f472b6" opacity="0.35" text-anchor="middle">♥</text>
+                <text x="170" y="500" font-size="16" fill="#c084fc" opacity="0.3" text-anchor="middle">♥</text>
+                <text x="400" y="520" font-size="18" fill="#f9a8d4" opacity="0.32" text-anchor="middle">♥</text>
+                <!-- 솜사탕 아이콘 실루엣 (하단) -->
+                <circle cx="80" cy="720" r="28" fill="#f5d0fe" opacity="0.3"/>
+                <circle cx="100" cy="705" r="22" fill="#fce7f3" opacity="0.28"/>
+                <line x1="90" y1="745" x2="90" y2="790" stroke="#d8b4fe" stroke-width="4" opacity="0.35" stroke-linecap="round"/>
+                <circle cx="420" cy="700" r="26" fill="#e9d5ff" opacity="0.28"/>
+                <circle cx="438" cy="688" r="20" fill="#fce7f3" opacity="0.25"/>
+                <line x1="430" y1="723" x2="430" y2="765" stroke="#d8b4fe" stroke-width="4" opacity="0.32" stroke-linecap="round"/>
+              </svg>`
+        };
+
+        scenery.innerHTML = scenes[theme] || '';
     }
+
 
     initEvents() {
         // 어느 위치든 첫 터치 시 AudioContext resume 호출 (소리 오류 100% 방지)
