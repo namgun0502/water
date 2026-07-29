@@ -675,15 +675,19 @@ class WaterSortGame {
     // settings: 저장된 설정값, isContinue: 이어서 진행 여부
     constructor(user, playerData, settings, isContinue) {
         this.user        = user;
-        this.playerData  = playerData; // PlayerDataManager 인스턴스
+        this.playerData  = playerData;
+        this.maxStage    = (settings && settings.max_stage) ? settings.max_stage : ((settings && settings.stage) ? settings.stage : 1); // 달성한 최고 스테이지
         this.stage       = (isContinue && settings) ? (settings.stage || 1) : 1;
         this.bottles     = [];
         this.selectedBottleIdx = null;
         this.history     = [];
         this.bonusBottlesCount = 1;
         this.isAnimating = false;
-        this.moveCount   = 0; // 현재 스테이지에서의 물 줄기 횟수 (=움직임 수)
+        this.moveCount   = 0;
         this.currentBgTheme = (settings && settings.bg_theme) ? settings.bg_theme : 'deep-space';
+        // 닉네임 보관 (stage_records 저장 시 사용)
+        this.nickname    = (settings && settings.nickname) ? settings.nickname : '플레이어';
+        if (this.playerData) this.playerData.nickname = this.nickname;
 
         // DOM 요소
         this.bottlesContainer = document.getElementById('bottles-container');
@@ -736,6 +740,7 @@ class WaterSortGame {
         if (!this.playerData) return;
         await this.playerData.save({
             stage:      this.stage,
+            max_stage:  this.maxStage, // 최고 스테이지는 절대 낮아지지 않음
             bg_theme:   this.currentBgTheme,
             bgm_track:  this.bgmSelect ? this.bgmSelect.value : 'lofi',
             bgm_volume: this.bgmVolumeSlider ? parseInt(this.bgmVolumeSlider.value, 10) : 60,
@@ -763,6 +768,16 @@ class WaterSortGame {
         // 사운드 설정 모달 열기/닫기
         document.getElementById('btn-sound-settings').addEventListener('click', () => {
             soundEngine.init();
+            // 스테이지 선택 드롭다운을 1 ~ maxStage 범위로 채우기
+            const sel = document.getElementById('stage-select');
+            sel.innerHTML = '';
+            for (let i = 1; i <= this.maxStage; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `STAGE ${i}`;
+                if (i === this.stage) opt.selected = true;
+                sel.appendChild(opt);
+            }
             this.soundModal.classList.remove('hidden');
         });
         document.getElementById('btn-close-sound').addEventListener('click', () => {
@@ -824,21 +839,16 @@ class WaterSortGame {
             this.startStage(this.stage);
         });
 
-        // 처음부터 다시 시작 버튼 (설정 모달 안)
-        document.getElementById('btn-reset-game').addEventListener('click', async () => {
-            const confirmed = confirm('⚠️ 정말 1단계부터 다시 시작하시겠습니까?\n현재 진행 기록이 초기화됩니다.');
-            if (!confirmed) return;
-            this.soundModal.classList.add('hidden');
-            this.stage = 1;
-            this.moveCount = 0;
-            await this.playerData.save({
-                stage: 1,
-                bg_theme: this.currentBgTheme,
-                bgm_track: this.bgmSelect ? this.bgmSelect.value : 'lofi',
-                bgm_volume: this.bgmVolumeSlider ? parseInt(this.bgmVolumeSlider.value, 10) : 60,
-                sfx_volume: this.sfxVolumeSlider ? parseInt(this.sfxVolumeSlider.value, 10) : 80
-            });
-            this.startStage(1);
+        // 스테이지 선택 드롭다운 이벤트 (1 ~ maxStage 까지 선택 가능)
+        document.getElementById('stage-select').addEventListener('change', (e) => {
+            const selected = parseInt(e.target.value, 10);
+            if (selected >= 1 && selected <= this.maxStage) {
+                this.stage = selected;
+                this.moveCount = 0;
+                this.soundModal.classList.add('hidden');
+                this.saveProgress();
+                this.startStage(this.stage);
+            }
         });
 
         // 랭킹 모달 열기
@@ -1080,7 +1090,9 @@ class WaterSortGame {
                     origin: { y: 0.6 }
                 });
             }
-            // 승리 시 스테이지 저장 + stage_records 최소 움직임 업데이트
+            // 승리 시 maxStage 갱신 (최고 스테이지는 절대 낮아지지 않음)
+            this.maxStage = Math.max(this.maxStage, this.stage + 1);
+            // 스테이지 저장 + stage_records 최소 움직임 업데이트
             this.saveProgress();
             this.saveStageRecord(this.stage, this.moveCount);
             setTimeout(() => {
@@ -1207,8 +1219,8 @@ async function loadTopStageRanking(currentUser) {
     try {
         const { data, error } = await sbClient
             .from('player_settings')
-            .select('nickname, stage, id')
-            .order('stage', { ascending: false })
+            .select('nickname, max_stage, stage, id')
+            .order('max_stage', { ascending: false })
             .limit(10);
 
         if (error || !data || data.length === 0) {
@@ -1221,6 +1233,7 @@ async function loadTopStageRanking(currentUser) {
             const rankClass = idx < 3 ? `rank-${idx + 1}` : '';
             const badge = idx < 3 ? medals[idx] : `${idx + 1}`;
             const isMe = currentUser && row.id === currentUser.id;
+            const bestStage = row.max_stage || row.stage || 1;
             return `
                 <div class="ranking-item ${rankClass}">
                     <div class="rank-badge">${badge}</div>
@@ -1229,9 +1242,9 @@ async function loadTopStageRanking(currentUser) {
                             ${row.nickname || '플레이어'}
                             ${isMe ? '<span class="rank-me">나</span>' : ''}
                         </div>
-                        <div class="rank-detail">최고 기록</div>
+                        <div class="rank-detail">최고 달성 스테이지</div>
                     </div>
-                    <div class="rank-value">STAGE ${row.stage}</div>
+                    <div class="rank-value">STAGE ${bestStage}</div>
                 </div>`;
         }).join('');
     } catch (e) {

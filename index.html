@@ -226,12 +226,15 @@
                         <input type="range" id="sfx-volume" class="custom-range" min="0" max="100" value="80">
                     </div>
 
-                    <!-- 처음부터 다시 시작 버튼 -->
+                    <!-- 스테이지 선택 드롭다운 (클리어한 스테이지 중에서 선택) -->
                     <div class="setting-group">
-                        <button id="btn-reset-game" class="reset-game-btn">
-                            <i class="fa-solid fa-rotate-left"></i>
-                            <span>🔄 처음부터 다시 시작 (1단계)</span>
-                        </button>
+                        <label class="setting-label">
+                            <i class="fa-solid fa-list-ol"></i> 스테이지 선택
+                        </label>
+                        <select id="stage-select" class="custom-select">
+                            <!-- JavaScript에서 1 ~ maxStage 범위로 동적 생성 -->
+                        </select>
+                        <p class="stage-select-hint">🎯 클리어한 스테이지 중 원하는 단계를 선택하세요!</p>
                     </div>
                 </div>
             </div>

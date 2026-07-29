@@ -898,33 +898,13 @@ html, body {
 /* 숨김 처리 유틸리티 */
 .hidden { display: none !important; }
 
-/* ============================================================
-   처음부터 다시 시작 버튼
-   ============================================================ */
-.reset-game-btn {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 14px 20px;
-    background: rgba(239, 68, 68, 0.15);
-    border: 1px solid rgba(239, 68, 68, 0.35);
-    border-radius: 14px;
-    color: #f87171;
-    font-family: var(--font-family);
-    font-size: 0.95rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
+/* 스테이지 선택 힌트 텍스트 */
+.stage-select-hint {
+    font-size: 0.78rem;
+    color: var(--text-muted);
     margin-top: 6px;
+    text-align: center;
 }
-.reset-game-btn:hover {
-    background: rgba(239, 68, 68, 0.28);
-    border-color: rgba(239, 68, 68, 0.6);
-    transform: translateY(-1px);
-}
-.reset-game-btn:active { transform: translateY(0); }
 
 /* ============================================================
    랭킹 모달 (Glassmorphism)
