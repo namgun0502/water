@@ -863,7 +863,7 @@ class WaterSortGame {
         });
     }
 
-    // 새로운 스테이지 시작 (색상 생성 및 초기 셔플)
+    // 새로운 스테이지 시작 (색상 생성 및 난수 시드 기반 고정 셔플)
     startStage(stageNum) {
         this.stageNumEl.textContent = stageNum;
         this.selectedBottleIdx = null;
@@ -873,7 +873,7 @@ class WaterSortGame {
 
         // 🌟 스테이지 난이도 공식: 1~2단계 3색 -> 최대 17색 (+ 기본 빈 병 3개 = 총 20개 병)
         const colorCount = Math.min(3 + Math.floor((stageNum - 1) / 2), 17);
-        const emptyBottleCount = 3; // 🌟 기본 제공 빈 병을 3개로 확장하여 재시작 시에도 쾌적함 보장!
+        const emptyBottleCount = 3; // 🌟 기본 제공 빈 병 3개
         const selectedColors = PALETTE.slice(0, colorCount);
 
         let colorPool = [];
@@ -883,8 +883,16 @@ class WaterSortGame {
             }
         });
 
+        // 🌟 시드 기반 난수 생성기 (스테이지 번호마다 항상 같은 색상 배열 보장!)
+        let seed = stageNum * 15485863 + 32452843; // 스테이지별 고유 시드
+        const pseudoRandom = () => {
+            seed = (seed * 9301 + 49297) % 233280;
+            return seed / 233280;
+        };
+
+        // 시드 난수로 색상 셔플
         for (let i = colorPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
+            const j = Math.floor(pseudoRandom() * (i + 1));
             [colorPool[i], colorPool[j]] = [colorPool[j], colorPool[i]];
         }
 
