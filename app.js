@@ -655,16 +655,10 @@ async function startGameAfterAuth(user, isNewUser = false) {
     continueModal.classList.remove('hidden');
     document.getElementById('app').classList.remove('hidden');
 
-    // 이어서 진행 버튼
+    // 게임 시작하기 버튼 클릭 이벤트
     document.getElementById('btn-continue').onclick = () => {
         continueModal.classList.add('hidden');
-        window.gameApp = new WaterSortGame(user, playerData, settings, true); // 이어서
-    };
-
-    // 처음부터 시작 버튼
-    document.getElementById('btn-new-game').onclick = () => {
-        continueModal.classList.add('hidden');
-        window.gameApp = new WaterSortGame(user, playerData, settings, false); // 처음부터
+        window.gameApp = new WaterSortGame(user, playerData, settings, true);
     };
 }
 
