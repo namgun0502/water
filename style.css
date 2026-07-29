@@ -55,72 +55,150 @@ html, body {
     transition: background 0.8s ease; /* 테마 전환 부드럽게 */
 }
 
-/* ====== 배경 테마 6종 정의 ====== */
+/* ====== 배경 테마 6종 정의 (고급 아티스틱 그래픽 & 오로라 파티클) ====== */
 
-/* 1. 🌌 Deep Space - 기본 딥 다크 우주 퍼플 (기본값) */
+/* 1. 🌌 Deep Space - 우주 은하수 별빛 오로라 */
 #app[data-theme="deep-space"] {
-    background: radial-gradient(circle at 50% 0%, #1e1b4b 0%, #0f172a 70%);
+    background: radial-gradient(ellipse at 50% 10%, #2e1065 0%, #1e1b4b 45%, #090d16 100%);
 }
-#app[data-theme="deep-space"] .bg-glow-1 { background: #a855f7; }
-#app[data-theme="deep-space"] .bg-glow-2 { background: #38bdf8; }
+#app[data-theme="deep-space"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 40px 70px, #e0e7ff, rgba(0,0,0,0)),
+        radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 160px 120px, #ddd6fe, rgba(0,0,0,0)),
+        radial-gradient(1.5px 1.5px at 230px 190px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 310px 80px, #c084fc, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 350px 350px;
+    opacity: 0.6;
+    pointer-events: none;
+    animation: starsPulse 4s ease-in-out infinite alternate;
+}
+#app[data-theme="deep-space"] .bg-glow-1 { background: #c084fc; width: 320px; height: 320px; opacity: 0.35; animation: floatGlow 10s ease-in-out infinite alternate; }
+#app[data-theme="deep-space"] .bg-glow-2 { background: #38bdf8; width: 280px; height: 280px; opacity: 0.3; animation: floatGlow 12s ease-in-out infinite alternate-reverse; }
 
-/* 2. 🌊 Ocean Depths - 심해 딥 블루 그라데이션 */
+/* 2. 🌊 Ocean Depths - 심해 해저 라이트 레이 & 신비로운 수중 파동 */
 #app[data-theme="ocean-depths"] {
-    background: radial-gradient(circle at 50% 0%, #0c3547 0%, #0a0f1e 70%);
+    background: radial-gradient(ellipse at 50% 0%, #0369a1 0%, #0c4a6e 40%, #031e30 100%);
 }
-#app[data-theme="ocean-depths"] .bg-glow-1 { background: #0ea5e9; }
-#app[data-theme="ocean-depths"] .bg-glow-2 { background: #06b6d4; }
+#app[data-theme="ocean-depths"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(45deg, rgba(56, 189, 248, 0.04) 0px, rgba(56, 189, 248, 0.04) 20px, transparent 20px, transparent 60px);
+    pointer-events: none;
+}
+#app[data-theme="ocean-depths"] .bg-glow-1 { background: #38bdf8; width: 340px; height: 340px; opacity: 0.4; animation: floatGlow 9s ease-in-out infinite alternate; }
+#app[data-theme="ocean-depths"] .bg-glow-2 { background: #2dd4bf; width: 300px; height: 300px; opacity: 0.35; animation: floatGlow 11s ease-in-out infinite alternate-reverse; }
 
-/* 3. 🌸 Cherry Blossom - 벚꽃 핑크 파스텔 */
+/* 3. 🌸 Cherry Blossom - 로맨틱 벚꽃 정원 & 은은한 꽃가루 오로라 */
 #app[data-theme="cherry-blossom"] {
-    background: radial-gradient(circle at 50% 0%, #3b0a2a 0%, #1a0d1a 70%);
+    background: radial-gradient(ellipse at 50% 10%, #831843 0%, #500724 50%, #1c030d 100%);
 }
-#app[data-theme="cherry-blossom"] .bg-glow-1 { background: #ec4899; }
-#app[data-theme="cherry-blossom"] .bg-glow-2 { background: #f472b6; }
+#app[data-theme="cherry-blossom"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        radial-gradient(3px 3px at 30px 50px, #fbcfe8, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 150px 180px, #f472b6, rgba(0,0,0,0)),
+        radial-gradient(3px 3px at 280px 90px, #fbcfe8, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: 300px 300px;
+    opacity: 0.5;
+    pointer-events: none;
+}
+#app[data-theme="cherry-blossom"] .bg-glow-1 { background: #f472b6; width: 320px; height: 320px; opacity: 0.35; animation: floatGlow 8s ease-in-out infinite alternate; }
+#app[data-theme="cherry-blossom"] .bg-glow-2 { background: #fb7185; width: 280px; height: 280px; opacity: 0.3; animation: floatGlow 10s ease-in-out infinite alternate-reverse; }
 
-/* 4. 🌿 Forest Night - 아늑한 다크 포레스트 초록 */
+/* 4. 🌿 Forest Night - 신비로운 다크 에메랄드 숲속 반딧불이 */
 #app[data-theme="forest-night"] {
-    background: radial-gradient(circle at 50% 0%, #0a2e1a 0%, #061510 70%);
+    background: radial-gradient(ellipse at 50% 10%, #064e3b 0%, #022c22 45%, #01140e 100%);
 }
-#app[data-theme="forest-night"] .bg-glow-1 { background: #22c55e; }
-#app[data-theme="forest-night"] .bg-glow-2 { background: #16a34a; }
+#app[data-theme="forest-night"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        radial-gradient(2.5px 2.5px at 50px 100px, #4ade80, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 200px 220px, #a3e635, rgba(0,0,0,0)),
+        radial-gradient(3px 3px at 320px 140px, #86efac, rgba(0,0,0,0));
+    background-size: 360px 360px;
+    opacity: 0.7;
+    pointer-events: none;
+    animation: starsPulse 3s ease-in-out infinite alternate;
+}
+#app[data-theme="forest-night"] .bg-glow-1 { background: #4ade80; width: 320px; height: 320px; opacity: 0.35; animation: floatGlow 9s ease-in-out infinite alternate; }
+#app[data-theme="forest-night"] .bg-glow-2 { background: #10b981; width: 300px; height: 300px; opacity: 0.3; animation: floatGlow 11s ease-in-out infinite alternate-reverse; }
 
-/* 5. 🌅 Sunset Glow - 따뜻한 석양 노을 오렌지/핑크 */
+/* 5. 🌅 Sunset Glow - 매혹적인 노을 석양 앰버 글로우 */
 #app[data-theme="sunset-glow"] {
-    background: radial-gradient(circle at 50% 0%, #3b1a08 0%, #1a0a05 70%);
+    background: radial-gradient(ellipse at 50% 10%, #7c2d12 0%, #451a03 50%, #1b0700 100%);
 }
-#app[data-theme="sunset-glow"] .bg-glow-1 { background: #f97316; }
-#app[data-theme="sunset-glow"] .bg-glow-2 { background: #fb923c; }
+#app[data-theme="sunset-glow"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to bottom, rgba(249, 115, 22, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+}
+#app[data-theme="sunset-glow"] .bg-glow-1 { background: #fb923c; width: 340px; height: 340px; opacity: 0.4; animation: floatGlow 7s ease-in-out infinite alternate; }
+#app[data-theme="sunset-glow"] .bg-glow-2 { background: #f43f5e; width: 300px; height: 300px; opacity: 0.35; animation: floatGlow 10s ease-in-out infinite alternate-reverse; }
 
-/* 6. 🍬 Cotton Candy - 몽환적인 파스텔 라벤더 */
+/* 6. 🍬 Cotton Candy - 꿈결 같은 파스텔 바이올렛 마법 구름 */
 #app[data-theme="cotton-candy"] {
-    background: radial-gradient(circle at 50% 0%, #1a0b3b 0%, #0a0818 70%);
+    background: radial-gradient(ellipse at 50% 10%, #581c87 0%, #3b0764 45%, #18022d 100%);
 }
-#app[data-theme="cotton-candy"] .bg-glow-1 { background: #c084fc; }
-#app[data-theme="cotton-candy"] .bg-glow-2 { background: #a78bfa; }
+#app[data-theme="cotton-candy"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        radial-gradient(2.5px 2.5px at 60px 40px, #e9d5ff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 180px 160px, #f472b6, rgba(0,0,0,0)),
+        radial-gradient(3px 3px at 300px 100px, #38bdf8, rgba(0,0,0,0));
+    background-size: 320px 320px;
+    opacity: 0.65;
+    pointer-events: none;
+}
+#app[data-theme="cotton-candy"] .bg-glow-1 { background: #c084fc; width: 340px; height: 340px; opacity: 0.38; animation: floatGlow 8s ease-in-out infinite alternate; }
+#app[data-theme="cotton-candy"] .bg-glow-2 { background: #f472b6; width: 300px; height: 300px; opacity: 0.32; animation: floatGlow 11s ease-in-out infinite alternate-reverse; }
 
 
-/* 배경 오로라 분위기 빛 효과 */
+/* 배경 오로라 분위기 빛 효과 & 유동 애니메이션 */
 .bg-glow {
     position: absolute;
-    width: 250px;
-    height: 250px;
     border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.25;
+    filter: blur(90px);
     pointer-events: none;
     z-index: 0;
+    transition: all 1s ease;
 }
 .bg-glow-1 {
-    top: -50px;
-    left: -50px;
-    background: #a855f7;
+    top: -60px;
+    left: -60px;
 }
 .bg-glow-2 {
-    bottom: -50px;
-    right: -50px;
-    background: #38bdf8;
+    bottom: -60px;
+    right: -60px;
 }
+
+@keyframes floatGlow {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(30px, 40px) scale(1.15); }
+    100% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+@keyframes starsPulse {
+    0% { opacity: 0.3; }
+    50% { opacity: 0.7; }
+    100% { opacity: 0.4; }
+}
+
 
 /* 4. 상단 헤더 */
 .game-header {
