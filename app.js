@@ -684,12 +684,13 @@ class WaterSortGame {
         if (this.playerData) this.playerData.nickname = this.nickname;
 
         // DOM 요소
-        this.bottlesContainer = document.getElementById('bottles-container');
-        this.stageNumEl       = document.getElementById('stage-number');
-        this.winModal         = document.getElementById('win-modal');
-        this.infoModal        = document.getElementById('info-modal');
-        this.soundModal       = document.getElementById('sound-modal');
-        this.appEl            = document.getElementById('app');
+        this.bottlesContainer   = document.getElementById('bottles-container');
+        this.completedContainer = document.getElementById('completed-container');
+        this.stageNumEl         = document.getElementById('stage-number');
+        this.winModal           = document.getElementById('win-modal');
+        this.infoModal          = document.getElementById('info-modal');
+        this.soundModal         = document.getElementById('sound-modal');
+        this.appEl              = document.getElementById('app');
 
         this.bgmSelect       = document.getElementById('bgm-select');
         this.bgThemeSelect   = document.getElementById('bg-theme-select');
@@ -868,6 +869,7 @@ class WaterSortGame {
         this.stageNumEl.textContent = stageNum;
         this.selectedBottleIdx = null;
         this.history = [];
+        this.completedBottles = []; // 🌟 화면 왼쪽 아래로 열외된 완성 병들의 색상 목록
         this.isAnimating = false;
         this.moveCount = 0; // 스테이지 시작 시 움직임 횟수 리셋
 
@@ -890,10 +892,25 @@ class WaterSortGame {
             return seed / 233280;
         };
 
-        // 시드 난수로 색상 셔플
-        for (let i = colorPool.length - 1; i > 0; i--) {
-            const j = Math.floor(pseudoRandom() * (i + 1));
-            [colorPool[i], colorPool[j]] = [colorPool[j], colorPool[i]];
+        // 시드 난수로 색상 셔플 (초기에 완성된 병이 없도록 검증)
+        let isValidShuffle = false;
+        let attempts = 0;
+        while (!isValidShuffle && attempts < 50) {
+            attempts++;
+            for (let i = colorPool.length - 1; i > 0; i--) {
+                const j = Math.floor(pseudoRandom() * (i + 1));
+                [colorPool[i], colorPool[j]] = [colorPool[j], colorPool[i]];
+            }
+
+            // 초기에 완성된 병(한 가지 색상 4개)이 있는지 검사
+            isValidShuffle = true;
+            for (let i = 0; i < colorCount; i++) {
+                const b = colorPool.slice(i * BOTTLE_CAPACITY, (i + 1) * BOTTLE_CAPACITY);
+                if (b.length === BOTTLE_CAPACITY && b.every(c => c === b[0])) {
+                    isValidShuffle = false;
+                    break;
+                }
+            }
         }
 
         this.bottles = [];
@@ -920,6 +937,7 @@ class WaterSortGame {
         // 처음 배치 상태 그대로 원복
         this.bottles = this.initialBottles.map(b => [...b]);
         this.selectedBottleIdx = null;
+        this.completedBottles = [];
         this.history = [];
         this.render();
     }
@@ -928,15 +946,28 @@ class WaterSortGame {
         this.bottlesContainer.innerHTML = '';
         this.bottlesContainer.className = 'bottles-container';
 
+        if (this.completedContainer) {
+            this.completedContainer.innerHTML = '';
+        }
+
+        // 🌟 1. 메인 보드 유리병 렌더링 (아직 완성되지 않은 병 및 빈 병)
         this.bottles.forEach((bottle, bIdx) => {
+            const isCompleted = (bottle.length === BOTTLE_CAPACITY && bottle.every(c => c === bottle[0]));
+            
+            // 만약 완성된 병이라면 열외 목록으로 이동하지 않았을 때 처리
             const wrapper = document.createElement('div');
             wrapper.className = 'bottle-wrapper';
             if (this.selectedBottleIdx === bIdx) {
                 wrapper.classList.add('selected');
             }
+            if (isCompleted) {
+                wrapper.classList.add('completed');
+            }
 
             wrapper.addEventListener('click', (e) => {
                 e.stopPropagation();
+                // 이미 완성된 병은 클릭 불가능하도록 막음
+                if (isCompleted) return;
                 this.handleBottleClick(bIdx);
             });
 
@@ -957,6 +988,32 @@ class WaterSortGame {
             wrapper.appendChild(bottleEl);
             this.bottlesContainer.appendChild(wrapper);
         });
+
+        // 🌟 2. 화면 왼쪽 아래 완성 보관함(completed-container) 렌더링
+        if (this.completedContainer && this.completedBottles) {
+            this.completedBottles.forEach(color => {
+                const wrapper = document.createElement('div');
+                wrapper.className = 'bottle-wrapper completed';
+
+                const bottleEl = document.createElement('div');
+                bottleEl.className = 'bottle';
+
+                const rimEl = document.createElement('div');
+                rimEl.className = 'bottle-rim';
+                wrapper.appendChild(rimEl);
+
+                // 4칸 모두 동일한 완색
+                for (let i = 0; i < BOTTLE_CAPACITY; i++) {
+                    const layer = document.createElement('div');
+                    layer.className = 'water-layer';
+                    layer.style.backgroundColor = color;
+                    bottleEl.appendChild(layer);
+                }
+
+                wrapper.appendChild(bottleEl);
+                this.completedContainer.appendChild(wrapper);
+            });
+        }
     }
 
     // 유리병 터치/클릭 처리 (선택 해제 및 부어 담기)
@@ -1054,7 +1111,25 @@ class WaterSortGame {
             this.selectedBottleIdx = null;
             this.render();
 
-            await new Promise(res => setTimeout(res, 300));
+            await new Promise(res => setTimeout(res, 200));
+
+            // 🌟 한 색상으로 가득 찬 물병(완색 병) 자동 검출 후 왼쪽 아래 보관함으로 열외 연출
+            for (let i = 0; i < this.bottles.length; i++) {
+                const b = this.bottles[i];
+                if (b.length === BOTTLE_CAPACITY && b.every(c => c === b[0])) {
+                    // 완료 효과음 & 팡파르
+                    soundEngine.playPop();
+                    if (typeof confetti === 'function') {
+                        confetti({ particleCount: 25, spread: 40, origin: { x: 0.2, y: 0.8 } });
+                    }
+                    // 완색 병의 색상을 저장하고 해당 병을 비움 (빈 병으로 만듦)
+                    const completedColor = b[0];
+                    this.completedBottles.push(completedColor);
+                    this.bottles[i] = []; // 비움
+                    this.render();
+                    await new Promise(res => setTimeout(res, 250));
+                }
+            }
         } catch (error) {
             console.error("Pouring error:", error);
         } finally {
@@ -1064,6 +1139,7 @@ class WaterSortGame {
 
         this.checkWinCondition();
     }
+
 
     checkWinCondition() {
         let isCleared = true;
@@ -1135,17 +1211,23 @@ class WaterSortGame {
     }
 
     saveHistory() {
-        const snapShot = this.bottles.map(b => [...b]);
+        const snapShot = {
+            bottles: this.bottles.map(b => [...b]),
+            completedBottles: [...this.completedBottles]
+        };
         this.history.push(snapShot);
     }
 
     undoMove() {
         if (this.isAnimating || this.history.length === 0) return;
         soundEngine.playPop();
-        this.bottles = this.history.pop();
+        const lastState = this.history.pop();
+        this.bottles = lastState.bottles;
+        this.completedBottles = lastState.completedBottles || [];
         this.selectedBottleIdx = null;
         this.render();
     }
+
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
