@@ -608,6 +608,7 @@ function switchTab(tab) {
 
 // HTML onclick 전역 핸들러
 async function handleLoginAction() {
+    soundEngine.init();
     if (!window._authManager) {
         window._authManager = new AuthManager();
     }
@@ -615,6 +616,7 @@ async function handleLoginAction() {
 }
 
 async function handleSignupAction() {
+    soundEngine.init();
     if (!window._authManager) {
         window._authManager = new AuthManager();
     }
@@ -1011,14 +1013,19 @@ class WaterSortGame {
 
 
     initEvents() {
-        // 어느 위치든 첫 터치 시 AudioContext resume 호출 (소리 오류 100% 방지)
+        // 어느 위치든 첫 터치/클릭 시 AudioContext resume 및 저장된 BGM 자동 재생 (Autoplay 제한 100% 보장)
         const unlockAudio = () => {
             soundEngine.init();
+            if (soundEngine.currentBgmTrack && soundEngine.currentBgmTrack !== 'off') {
+                soundEngine.changeBgm(soundEngine.currentBgmTrack);
+            }
             window.removeEventListener('click', unlockAudio);
             window.removeEventListener('touchstart', unlockAudio);
+            window.removeEventListener('pointerdown', unlockAudio);
         };
         window.addEventListener('click', unlockAudio);
         window.addEventListener('touchstart', unlockAudio);
+        window.addEventListener('pointerdown', unlockAudio);
 
         // 사운드/게임 설정 모달 열기/닫기
         document.getElementById('btn-sound-settings').addEventListener('click', () => {
